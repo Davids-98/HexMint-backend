@@ -17,6 +17,9 @@ const AdminDetailsModel = require('../HexMint-backend/models/AdminDetailsModel')
 
 const express = require('express');
 
+//midlewaee
+const cors = require('cors')
+
 //import mongoose
 const mongoose = require('mongoose');
 
@@ -26,8 +29,10 @@ const app = express();
 
 //middleware
 app.use(express.json());
+app.use(cors())
 
 //Connecting to database
+const PORT = process.env.PORT;
 mongoose.connect(process.env.MONG_URI)
    .then(() => {
         app.listen(PORT, () => {
@@ -43,10 +48,11 @@ app.use((req, res, next) => {
 
 //listen for request
 
-const PORT = process.env.PORT;
 
 
 //Route(Respond to the Request)
+app.use('/auth', require('./routes/auth'));
+
 app.get('/', (req, res) => {
     res.json({mssg: 'Welcome to the app!'})
 });
