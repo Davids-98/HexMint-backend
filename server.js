@@ -33,18 +33,12 @@ app.use(cors())
 
 //Connecting to database
 const PORT = process.env.PORT;
-mongoose.connect(process.env.MONG_URI)
-   .then(() => {
-        app.listen(PORT, () => {
-        console.log('Connected to DB and Listening on port',process.env.PORT);
-    });
-   })
-   .catch((err) => console.log(err));
 
-app.use((req, res, next) => {
-    console.log(req.path, req.method)
-    next()
-})
+
+// app.use((req, res, next) => {
+//     console.log(req.path, req.method)
+//     next()
+// })
 
 //listen for request
 
@@ -58,4 +52,11 @@ app.get('/', (req, res) => {
 });
 
 
-
+// listner
+mongoose.connect(process.env.MONG_URI)
+   .then(() => {
+        app.listen(PORT, () => {
+        console.log('Connected to DB and Listening on port',process.env.PORT);
+    });
+   })
+   .catch((err) => console.log(err));
