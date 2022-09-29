@@ -4,9 +4,8 @@ const authController = require('../controllers/authController');
 
 
 router
-    .post('/connect-wallet', authController.handleConnectWallet)
-    .post('/connect',authController.handleConnect
-    )
+    .post('/connect-wallet',authController.handleConnectWallet)
+
 
 
 module.exports = router;
