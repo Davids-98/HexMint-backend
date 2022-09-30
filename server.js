@@ -20,7 +20,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 //midlewaee
-const cors = require("cors");
+
+const cors = require('cors')
+const multer  = require('multer')
+
 
 //import mongoose
 const mongoose = require("mongoose");
@@ -44,13 +47,21 @@ const PORT = process.env.PORT;
 
 //listen for request
 
+
+
+
+
+
+app.get('/', (req, res) => {
+    res.json({mssg: 'Welcome to the app!'})
+});
+
 //Route(Respond to the Request)
-app.use("/auth", require("./routes/auth"));
+app.use('/auth', require('./routes/auth'));
+app.use('/user', require('./routes/user'));
+app.use('/customer',multer().array(),require('./routes/customer'));
 app.use("/admin", require("./routes/admin"));
 
-app.get("/", (req, res) => {
-  res.json({ mssg: "Welcome to the app!" });
-});
 
 // listner
 mongoose
