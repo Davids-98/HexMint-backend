@@ -13,8 +13,10 @@ const handleAddAdmin = async (req, res) => {
 
     if (user) {
       return res.status(200).json({
-        message: "already exists with this wallet address!",
+        message: "Already exists with this Wallet Address!",
         AdminName: user.name,
+        status: 200,
+        view: user,
       });
     } else {
       const newUser = await UserModel.create({
@@ -24,14 +26,23 @@ const handleAddAdmin = async (req, res) => {
         username: "Admin",
         propic: null,
       });
+
+      const newAdmin = await AdminDetailsModel.create({
+        userid: newUser._id,
+        email: email,
+        DOB: DOB,
+        mobilenumber: mobilenumber,
+      });
+
       return res.status(201).json({
-        message: "successfully added!",
+        message: "Successfully Added!",
         name: newUser.name,
+        status: 201,
       });
     }
   } catch (err) {
     return res.status(500).json({
-      message: "error",
+      message: "Error Occured!",
     });
   }
 };
