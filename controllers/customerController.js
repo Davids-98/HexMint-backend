@@ -7,12 +7,16 @@ const updateUserDetails = async (req, res) => {
     console.log("update user details calling")
     const { walletaddress, name, username, propic} = req.body;
     console.log("wallet address", walletaddress);
-    var profilepic = Buffer.from(propic, 'base64')
+    // var profilepic = Buffer.from(propic, 'base64')
 
     //update user details
 
     try {
-        const user = await UserModel.findOneAndUpdate({ walletaddress: walletaddress }, { name: name, username: username, propic: profilepic }, { new: true });
+        const user = await UserModel.findOneAndUpdate({ walletaddress: walletaddress }, { name: name, username: username, propic: {
+                    data: propic,
+            contentType: 'image/png'} }
+            , { new: true }
+        );
         console.log("user")
         console.log(user)
         if (user) {
