@@ -49,13 +49,21 @@ const handleAddAdmin = async (req, res) => {
 
 const getAllAdmins = async (req, res) => {
   console.log("hello");
-  try {
-    const admins = await AdminDetailsModel.find({});
+  const out = [];
 
-    console.log(admins);
+  try {
+    const users = await UserModel.find({ usertype: "Admin" });
+    for (var i = 0; i < users.length; i++) {
+      const admin = await AdminDetailsModel.findOne({
+        userid: users[i]._id,
+      }).populate("userid");
+      out.push(admin);
+    }
+
+    console.log(out);
     return res.status(200).json({
       status: "success",
-      data: admins,
+      data: out,
     });
   } catch (error) {
     console.log("error");
