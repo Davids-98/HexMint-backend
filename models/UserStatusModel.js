@@ -9,6 +9,7 @@ var UserStatus = new Schema({
   },
   isblocked: {
     type: Boolean,
+    default: false,
     required: true
   },
 
