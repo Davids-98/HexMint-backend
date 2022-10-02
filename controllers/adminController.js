@@ -2,6 +2,7 @@ const UserModel = require("../models/UserModel");
 const AdminDetailsModel = require("../models/AdminDetailsModel");
 
 const handleAddAdmin = async (req, res) => {
+  console.log("hello");
   console.log("handle add admin calling, ", req.body);
   const { name, walletaddress, email, mobilenumber, DOB } = req.body;
   console.log("passing data", name, walletaddress, email, mobilenumber, DOB);
@@ -15,7 +16,7 @@ const handleAddAdmin = async (req, res) => {
       return res.status(200).json({
         message: "Already exists with this Wallet Address!",
         AdminName: user.name,
-        status: 200,
+
         view: user,
       });
     } else {
@@ -37,7 +38,6 @@ const handleAddAdmin = async (req, res) => {
       return res.status(201).json({
         message: "Successfully Added!",
         name: newUser.name,
-        status: 201,
       });
     }
   } catch (err) {
@@ -47,6 +47,22 @@ const handleAddAdmin = async (req, res) => {
   }
 };
 
+const getAllAdmins = async (req, res) => {
+  console.log("hello");
+  try {
+    const admins = await AdminDetailsModel.find({});
+
+    console.log(admins);
+    return res.status(200).json({
+      status: "success",
+      data: admins,
+    });
+  } catch (error) {
+    console.log("error");
+  }
+};
+
 module.exports = {
   handleAddAdmin,
+  getAllAdmins,
 };
