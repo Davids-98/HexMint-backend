@@ -1,6 +1,5 @@
 const UserModel = require("../models/UserModel");
 const AdminDetailsModel = require("../models/AdminDetailsModel");
-const moment = require("moment");
 
 const handleAddAdmin = async (req, res) => {
   console.log("hello");
@@ -67,11 +66,36 @@ const getAllAdmins = async (req, res) => {
       data: out,
     });
   } catch (error) {
-    console.log("error");
+    return res.status(500).json({
+      message: "Error Occured!",
+    });
+  }
+};
+
+const deleteAdmin = async (req, res) => {
+  console.log("hello delete");
+  try {
+    const { id } = req.params;
+    console.log(id);
+
+    const admin = await AdminDetailsModel.deleteOne({ userid: id });
+    const user = await UserModel.deleteOne({ _id: id });
+
+    console.log("Deleted Admin", admin);
+    console.log("Deleted User", user);
+
+    return res.status(200).json({
+      message: "Successfully Deleted!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error Occured!",
+    });
   }
 };
 
 module.exports = {
   handleAddAdmin,
   getAllAdmins,
+  deleteAdmin,
 };
