@@ -78,8 +78,12 @@ const getUserDetails = async (req, res) => {
         })
     }
 }
+        
+ 
 
 module.exports = {
+
     getUserDetails,
     // getUserType
 }
+
