@@ -47,6 +47,61 @@ const handleAddAdmin = async (req, res) => {
   }
 };
 
+const handleUpdateAdmin = async (req, res) => {
+  console.log("handle update admin calling, ", req.body);
+  const { walletaddress, email, mobilenumber, propic} = req.body;
+  console.log("passing data", email, mobilenumber, propic);
+
+  //Find and update admin details
+  try {
+    //Update userModel and adminDetailsModel
+    const updatedUser = await UserModel.findOneAndUpdate({ walletaddress: walletaddress }, {propic : {data: propic, contentType: 'image/png'}}, {new: true});
+    console.log("user", updatedUser);
+    if (updatedUser) {
+      const updatedAdmin = await AdminDetailsModel.findOneAndUpdate({ userid: updatedUser._id }, {email: email, mobilenumber: mobilenumber}, {new: true});
+      console.log("admin", updatedAdmin);
+      return res.status(200).json({
+        message: "Successfully Updated!",
+        status: 200,
+      });
+    
+    } else {
+      return res.status(400).json({
+        message: "Error Occured!",
+        status: 400,
+      });
+    }
+  
+  } catch (err) {
+    return res.status(500).json({
+      message: "Error Occured!",
+    });
+  }
+};
+
+
+const getAdminDetails = async (req, res) => {
+  console.log("handle get admin calling, ", req.body);
+  const { walletaddress } = req.body;
+  console.log("passing data", walletaddress);
+
+  try {
+    const user = await UserModel.findOne({ walletaddress: walletaddress });
+    // console.log("user", user);
+
+    const admin = await AdminDetailsModel.findOne({ userid: user._id }).populate('userid');
+    console.log("admin", admin);
+
+  } catch (err) {
+    return res.status(500).json({
+      message: "Error Occured!",
+    });
+  }
+}
+
+
 module.exports = {
   handleAddAdmin,
+  getAdminDetails,
+  handleUpdateAdmin,
 };

@@ -13,9 +13,8 @@ const updateUserDetails = async (req, res) => {
 
     try {
         const user = await UserModel.findOneAndUpdate({ walletaddress: walletaddress }, { name: name, username: username, propic: {
-                    data: propic,
-            contentType: 'image/png'} }
-            , { new: true }
+            data: propic,
+            contentType: 'image/png'} }, { new: true }
         );
         console.log("user")
         console.log(user)

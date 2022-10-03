@@ -4,8 +4,8 @@ const userController = require('../controllers/userController');
 
 
 router
-    .get('/user-type', userController.getUserType)
-
+    .get('/user-details', userController.getUserDetails)
+    // .get('/user-type', userController.getUserType)
 
 
 module.exports = router;
