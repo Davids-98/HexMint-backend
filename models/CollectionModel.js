@@ -1,18 +1,24 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var Collection = new Schema({
-  collectionid: {
-    type: Schema.Types.ObjectId,
+  // collectionId: {
+  //   type: Schema.Types.ObjectId,
+  //   required: true
+  // },
+  collectionName: {
+    type: String,
     required: true
   },
-  // contractaddress: {
-  //   type: String,
-  //   required: true
-  // },
-  // ownerscount: {
-  //   type: Number,
-  //   required: true
-  // },
+  collectionDescription: {
+    type: String,
+    required: true
+  },
+  logoImg: {
+    type: {
+      data: Buffer,
+      contentType: String
+    }
+  },
   NFTcount: {
     type: Number,
     required: true

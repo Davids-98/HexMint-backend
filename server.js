@@ -1,19 +1,19 @@
-require('dotenv').config();
-const UserModel = require('../HexMint-backend/models/UserModel');
-const UserStatusModel = require('../HexMint-backend/models/UserStatusModel');
-const AdminEditRequestsModel = require('../HexMint-backend/models/AdminEditRequestModel');
-const FixedListingModel = require('../HexMint-backend/models/FixedListingModel');
-const ActivityDetailsModel = require('../HexMint-backend/models/ActivityDetailsModel');
-const ActivityModel = require('../HexMint-backend/models/ActivityModel');
-const AdminStatusModel = require('../HexMint-backend/models/AdminStatusModel');
-const AdminUpdatingDetailsModel = require('../HexMint-backend/models/AdminUpdatingDetailsModel');
-const auctionlistingModel = require('../HexMint-backend/models/auctionlistingModel');
-const BidModel = require('../HexMint-backend/models/BidModel');
-const CollectionModel = require('../HexMint-backend/models/CollectionModel');
-const ListingsModel = require('../HexMint-backend/models/ListingsModel');
-const NFTModel = require('../HexMint-backend/models/NFTModel');
-const ReportModel = require('../HexMint-backend/models/ReportModel');
-const AdminDetailsModel = require('../HexMint-backend/models/AdminDetailsModel');
+require("dotenv").config();
+const UserModel = require("../HexMint-backend/models/UserModel");
+const UserStatusModel = require("../HexMint-backend/models/UserStatusModel");
+const AdminEditRequestsModel = require("../HexMint-backend/models/AdminEditRequestModel");
+const FixedListingModel = require("../HexMint-backend/models/FixedListingModel");
+const ActivityDetailsModel = require("../HexMint-backend/models/ActivityDetailsModel");
+const ActivityModel = require("../HexMint-backend/models/ActivityModel");
+const AdminStatusModel = require("../HexMint-backend/models/AdminStatusModel");
+const AdminUpdatingDetailsModel = require("../HexMint-backend/models/AdminUpdatingDetailsModel");
+const AuctionlistingModel = require("../HexMint-backend/models/AuctionListingModel");
+const BidModel = require("../HexMint-backend/models/BidModel");
+const CollectionModel = require("../HexMint-backend/models/CollectionModel");
+const ListingsModel = require("../HexMint-backend/models/ListingsModel");
+const NFTModel = require("../HexMint-backend/models/NFTModel");
+const ReportModel = require("../HexMint-backend/models/ReportModel");
+const AdminDetailsModel = require("../HexMint-backend/models/AdminDetailsModel");
 
 const express = require('express');
 
