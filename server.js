@@ -7,7 +7,9 @@ const ActivityDetailsModel = require("../HexMint-backend/models/ActivityDetailsM
 const ActivityModel = require("../HexMint-backend/models/ActivityModel");
 const AdminStatusModel = require("../HexMint-backend/models/AdminStatusModel");
 const AdminUpdatingDetailsModel = require("../HexMint-backend/models/AdminUpdatingDetailsModel");
-const auctionlistingModel = require("../HexMint-backend/models/auctionlistingModel");
+
+const AuctionlistingModel = require("../HexMint-backend/models/AuctionListingModel");
+
 const BidModel = require("../HexMint-backend/models/BidModel");
 const CollectionModel = require("../HexMint-backend/models/CollectionModel");
 const ListingsModel = require("../HexMint-backend/models/ListingsModel");
@@ -15,9 +17,11 @@ const NFTModel = require("../HexMint-backend/models/NFTModel");
 const ReportModel = require("../HexMint-backend/models/ReportModel");
 const AdminDetailsModel = require("../HexMint-backend/models/AdminDetailsModel");
 
+
 const express = require("express");
 
 const bodyParser = require("body-parser");
+
 
 //midlewaee
 

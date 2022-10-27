@@ -1,3 +1,4 @@
+const CollectionModel = require("../models/CollectionModel");
 const UserModel = require("../models/UserModel");
 
 //update user details
@@ -36,6 +37,47 @@ const updateUserDetails = async (req, res) => {
 };
 
 
+const createCollection = async (req, res) => {
+  console.log("hello");
+  // console.log("handle create collection calling, ", req.body);
+  const {collectionId, collectionName, collectionDescription, logoImg,NFTcount, floorprize, totalprize} = req.body;
+  console.log("passing data", collectionName, collectionDescription);
+
+  try {
+    const collection = await CollectionModel.findOne({
+      collectionName: collectionName,
+    });
+
+    if (collection) {
+      return res.status(200).json({
+        message: "Already exists with this Collection Name!",
+        collectionName: collection.collectionName,
+        view: collection,
+      });
+    } else {
+      const newCollection = await CollectionModel.create({
+        // colletionId can get by calling the function "getCollectionCount"
+        // collectionId: newCollection.collectionId,
+        collectionName: collectionName,
+        collectionDescription: collectionDescription,
+        logoImg: { data: logoImg, contentType: "image/png" },
+        NFTcount: NFTcount,
+        floorprize: floorprize,
+        totalprize: totalprize,
+      });
+
+      return res.status(202).json({
+        message: "Successfully Added!",
+        name: newCollection.collectionName,
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({
+      message: err,
+    });
+  }
+};
+
 const getAllUsers = async (req, res) => {
   console.log("hello");
   try {
@@ -51,7 +93,24 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const getAllCollections = async (req, res) => {
+  console.log("hello");
+  try {
+    const collections = await CollectionModel.find();
+
+    console.log(collections);
+    return res.status(200).json({
+      status: "success",
+      collections: collections,
+    });
+  } catch (error) {
+    console.log("error: ", error);
+  }
+};
+
 module.exports = {
   updateUserDetails,
   getAllUsers,
+  createCollection,
+  getAllCollections,
 };
