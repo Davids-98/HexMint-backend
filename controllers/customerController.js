@@ -36,6 +36,7 @@ const updateUserDetails = async (req, res) => {
     }
 };
 
+
 const createCollection = async (req, res) => {
   console.log("hello");
   // console.log("handle create collection calling, ", req.body);

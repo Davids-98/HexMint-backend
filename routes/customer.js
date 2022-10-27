@@ -8,4 +8,5 @@ router
   .get("/get-collection-count", customerController.getAllCollections)
   .post("/create-collection", customerController.createCollection);
 
+
 module.exports = router;
