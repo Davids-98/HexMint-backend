@@ -19,10 +19,7 @@ var User = new Schema({
     type: String
   },
   propic: {
-    type: {
-      data: Buffer,
-      contentType: String
-    }
+    type: String
   }
 },{timestamps : true});
 

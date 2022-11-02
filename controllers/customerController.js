@@ -11,68 +11,87 @@ const updateUserDetails = async (req, res) => {
 
   //update user details
 
-    try {
-        const user = await UserModel.findOneAndUpdate({ walletaddress: walletaddress }, { name: name, username: username, propic: {
-            data: propic,
-            contentType: 'image/png'} }, { new: true }
-        );
-        console.log("user")
-        console.log(user)
-        if (user) {
-            return res.status(200).json({
-                "message": "success",
-                "user": user
-            })
-        } else {
-            return res.status(400).json({
-                "message": "error"
-            })
-        }
-    } catch (err) {
-        return res.status(400).json({
-            "message": err
-        })
-
+  try {
+    const user = await UserModel.findOneAndUpdate(
+      { walletaddress: walletaddress },
+      {
+        name: name,
+        username: username,
+        propic: propic
+      },
+      { new: true }
+    );
+    console.log("user");
+    console.log(user);
+    if (user) {
+      return res.status(200).json({
+        message: "success",
+        user: user,
+      });
+    } else {
+      return res.status(400).json({
+        message: "error",
+      });
     }
+  } catch (err) {
+    return res.status(400).json({
+      message: err,
+    });
+  }
 };
-
 
 const createCollection = async (req, res) => {
   console.log("hello");
   // console.log("handle create collection calling, ", req.body);
-  const {collectionId, collectionName, collectionDescription, logoImg,NFTcount, floorprize, totalprize} = req.body;
-  console.log("passing data", collectionName, collectionDescription);
+  const {
+    userid,
+    collectionName,
+    collectionDescription,
+    logoImg,
+    ownersCount,
+  } = req.body;
 
   try {
-    const collection = await CollectionModel.findOne({
-      collectionName: collectionName,
-    });
+    const user = await UserModel.findOne({ walletaddress: userid });
+    // console.log("user",user," ",user._id);
+    if (user) {
+      try {
+        const collection = await CollectionModel.findOne({
+          collectionName: collectionName,
+        });
 
-    if (collection) {
-      return res.status(200).json({
-        message: "Already exists with this Collection Name!",
-        collectionName: collection.collectionName,
-        view: collection,
-      });
+        if (collection) {
+          return res.status(200).json({
+            message: "Already exists with this Collection Name!",
+            collectionName: collection.collectionName,
+            view: collection,
+          });
+        } else {
+          const newCollection = await CollectionModel.create({
+            userid: user._id,
+            collectionName: collectionName,
+            collectionDescription: collectionDescription,
+            logoImg: logoImg,
+            ownersCount: ownersCount,
+          });
+
+          return res.status(202).json({
+            message: "Successfully Added!",
+            name: newCollection.collectionName,
+          });
+        }
+      } catch (err) {
+        return res.status(500).json({
+          message: err,
+        });
+      }
     } else {
-      const newCollection = await CollectionModel.create({
-        // colletionId can get by calling the function "getCollectionCount"
-        // collectionId: newCollection.collectionId,
-        collectionName: collectionName,
-        collectionDescription: collectionDescription,
-        logoImg: { data: logoImg, contentType: "image/png" },
-        NFTcount: NFTcount,
-        floorprize: floorprize,
-        totalprize: totalprize,
-      });
-
-      return res.status(202).json({
-        message: "Successfully Added!",
-        name: newCollection.collectionName,
+      return res.status(400).json({
+        message: "user not existing",
       });
     }
   } catch (err) {
-    return res.status(500).json({
+    return res.status(400).json({
       message: err,
     });
   }
