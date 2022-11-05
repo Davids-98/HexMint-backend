@@ -147,6 +147,6 @@ describe("Admin Controller", () => {
       };
       const result = await getAllAdmins(req, res);
       expect(result.status).toHaveBeenCalledWith(200);
-    }, 20000);
+    }, 40000);
   });
 });
