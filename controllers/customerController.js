@@ -11,30 +11,38 @@ const updateUserDetails = async (req, res) => {
 
   //update user details
 
-    try {
-        const user = await UserModel.findOneAndUpdate({ walletaddress: walletaddress }, { name: name, username: username, propic: {
-            data: propic,
-            contentType: 'image/png'} }, { new: true }
-        );
-        console.log("user")
-        console.log(user)
-        if (user) {
-            return res.status(200).json({
-                "message": "success",
-                "user": user
-            })
-        } else {
-            return res.status(400).json({
-                "message": "error"
-            })
-        }
-    } catch (err) {
-        return res.status(400).json({
-            "message": err
-        })
-
+  try {
+    const user = await UserModel.findOneAndUpdate(
+      { walletaddress: walletaddress },
+      {
+        name: name,
+        username: username,
+        propic: {
+          data: propic,
+          contentType: "image/png",
+        },
+      },
+      { new: true }
+    );
+    console.log("user");
+    console.log(user);
+    if (user) {
+      return res.status(200).json({
+        message: "success",
+        user: user,
+      });
+    } else {
+      return res.status(400).json({
+        message: "error",
+      });
     }
+  } catch (err) {
+    return res.status(400).json({
+      message: err,
+    });
+  }
 };
+
 
 
 const createCollection = async (req, res) => {
@@ -78,6 +86,7 @@ const createCollection = async (req, res) => {
   }
 };
 
+
 const getAllUsers = async (req, res) => {
   console.log("hello");
   try {
@@ -89,6 +98,9 @@ const getAllUsers = async (req, res) => {
       data: users,
     });
   } catch (error) {
+    return res.status(400).json({
+      status: "error",
+    });
     console.log("error");
   }
 };

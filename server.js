@@ -18,6 +18,7 @@ const ReportModel = require("../HexMint-backend/models/ReportModel");
 const AdminDetailsModel = require("../HexMint-backend/models/AdminDetailsModel");
 
 
+
 const express = require("express");
 
 const bodyParser = require("body-parser");
@@ -26,22 +27,18 @@ const bodyParser = require("body-parser");
 //midlewaee
 
 const cors = require("cors");
+
 const multer = require("multer");
 
 //import mongoose
 const mongoose = require("mongoose");
 
+const app = require("./app");
+
 //express app
-const app = express();
-
-app.use(bodyParser.json());
-
-//middleware
-app.use(express.json());
-app.use(cors());
-
+const db = require("./db_connections");
 //Connecting to database
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 // app.use((req, res, next) => {
 //     console.log(req.path, req.method)
@@ -50,20 +47,15 @@ const PORT = process.env.PORT;
 
 //listen for request
 
-app.get("/", (req, res) => {
-  res.json({ mssg: "Welcome to the app!" });
-});
-
 //Route(Respond to the Request)
 
-app.use('/auth', require('./routes/auth'));
-app.use('/user', require('./routes/user'));
-app.use('/customer',multer().array(),require('./routes/customer'));
-app.use("/admin", multer().array(),require('./routes/admin'));
+// app.use("/auth", require("./routes/auth"));
+// app.use("/user", require("./routes/user"));
+// app.use("/customer", multer().array(), require("./routes/customer"));
+// app.use("/admin", multer().array(), require("./routes/admin"));
 
 // listner
-mongoose
-  .connect(process.env.MONG_URI)
+db.connect()
   .then(() => {
     app.listen(PORT, () => {
       console.log("Connected to DB and Listening on port", process.env.PORT);
