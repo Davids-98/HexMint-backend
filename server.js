@@ -1,7 +1,7 @@
 require("dotenv").config();
 const UserModel = require("../HexMint-backend/models/UserModel");
 const UserStatusModel = require("../HexMint-backend/models/UserStatusModel");
-const AdminEditRequestsModel = require("../HexMint-backend/models/AdminEditRequestModel");
+// const AdminEditRequestsModel = require("../HexMint-backend/models/AdminEditRequestModel");
 const FixedListingModel = require("../HexMint-backend/models/FixedListingModel");
 const ActivityDetailsModel = require("../HexMint-backend/models/ActivityDetailsModel");
 const ActivityModel = require("../HexMint-backend/models/ActivityModel");
