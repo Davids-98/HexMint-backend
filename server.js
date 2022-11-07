@@ -36,14 +36,14 @@ const multer = require("multer");
 const mongoose = require("mongoose");
 
 //express app
-const app = express()
-app.use(express.json())
+// const app = express()
+// app.use(express.json())
 
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
-//middleware
-app.use(express.json());
-app.use(cors());
+// //middleware
+// app.use(express.json());
+// app.use(cors());
 
 const app = require("./app");
 
