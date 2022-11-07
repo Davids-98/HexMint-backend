@@ -22,9 +22,11 @@ const AdminDetailsModel = require("../HexMint-backend/models/AdminDetailsModel")
 const express = require("express");
 
 const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
 
 
-//midlewaee
+
+//midleware
 
 const cors = require("cors");
 
@@ -33,7 +35,18 @@ const multer = require("multer");
 //import mongoose
 const mongoose = require("mongoose");
 
+//express app
+const app = express()
+app.use(express.json())
+
+app.use(bodyParser.json());
+
+//middleware
+app.use(express.json());
+app.use(cors());
+
 const app = require("./app");
+
 
 //express app
 const db = require("./db_connections");
