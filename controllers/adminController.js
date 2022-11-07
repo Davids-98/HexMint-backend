@@ -2,10 +2,10 @@ const UserModel = require("../models/UserModel");
 const AdminDetailsModel = require("../models/AdminDetailsModel");
 
 const handleAddAdmin = async (req, res) => {
-  console.log("hello");
-  console.log("handle add admin calling, ", req.body);
+  // console.log("hello");
+  // console.log("handle add admin calling, ", req.body);
   const { name, walletaddress, email, mobilenumber, DOB } = req.body;
-  console.log("passing data", name, walletaddress, email, mobilenumber, DOB);
+  // console.log("passing data", name, walletaddress, email, mobilenumber, DOB);
 
   try {
     const user = await UserModel.findOne({
@@ -38,6 +38,46 @@ const handleAddAdmin = async (req, res) => {
       return res.status(201).json({
         message: "Successfully Added!",
         name: newUser.name,
+        email: newAdmin.email,
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error Occured!",
+    });
+  }
+};
+
+const handleUpdateAdmin = async (req, res) => {
+  // console.log("handle update admin calling, ", req.body);
+  const { walletaddress, email, mobilenumber, propic } = req.body;
+  // console.log("passing data", email, mobilenumber, propic);
+
+  //Find and update admin details
+  try {
+    //Update userModel and adminDetailsModel
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { walletaddress: walletaddress },
+      { propic: { data: propic, contentType: "image/png" } },
+      { new: true }
+    );
+    // console.log("user", updatedUser);
+    if (updatedUser) {
+      const updatedAdmin = await AdminDetailsModel.findOneAndUpdate(
+        { userid: updatedUser._id },
+        { email: email, mobilenumber: mobilenumber },
+        { new: true }
+      );
+      // console.log("admin", updatedAdmin);
+      return res.status(200).json({
+        message: "Successfully Updated!",
+        status: 200,
+      });
+    } else {
+      return res.status(400).json({
+        message: "Error Occured!",
+        status: 400,
       });
     }
   } catch (err) {
@@ -47,41 +87,8 @@ const handleAddAdmin = async (req, res) => {
   }
 };
 
-
-const handleUpdateAdmin = async (req, res) => {
-  console.log("handle update admin calling, ", req.body);
-  const { walletaddress, email, mobilenumber, propic} = req.body;
-  console.log("passing data", email, mobilenumber, propic);
-
-  //Find and update admin details
-  try {
-    //Update userModel and adminDetailsModel
-    const updatedUser = await UserModel.findOneAndUpdate({ walletaddress: walletaddress }, {propic : {data: propic, contentType: 'image/png'}}, {new: true});
-    console.log("user", updatedUser);
-    if (updatedUser) {
-      const updatedAdmin = await AdminDetailsModel.findOneAndUpdate({ userid: updatedUser._id }, {email: email, mobilenumber: mobilenumber}, {new: true});
-      console.log("admin", updatedAdmin);
-      return res.status(200).json({
-        message: "Successfully Updated!",
-        status: 200,
-      });
-    
-    } else {
-      return res.status(400).json({
-        message: "Error Occured!",
-        status: 400,
-      });
-    }
-  
-  } catch (err) {
-  return res.status(500).json({
-      message: "Error Occured!",
-    });
-  }
-};
-
 const getAllAdmins = async (req, res) => {
-  console.log("hello");
+  // console.log("hello");
   const out = [];
 
   try {
@@ -93,7 +100,7 @@ const getAllAdmins = async (req, res) => {
       out.push(admin);
     }
 
-    console.log(out);
+    // console.log(out);
     return res.status(200).json({
       status: "success",
       data: out,
@@ -106,17 +113,22 @@ const getAllAdmins = async (req, res) => {
 };
 
 const getAdminDetails = async (req, res) => {
-  console.log("handle get admin calling, ", req.body);
+  // console.log("handle get admin calling, ", req.body);
   const { walletaddress } = req.body;
-  console.log("passing data", walletaddress);
+  // console.log("passing data", walletaddress);
 
   try {
     const user = await UserModel.findOne({ walletaddress: walletaddress });
     // console.log("user", user);
 
-    const admin = await AdminDetailsModel.findOne({ userid: user._id }).populate('userid');
-    console.log("admin", admin);
-
+    const admin = await AdminDetailsModel.findOne({
+      userid: user._id,
+    }).populate("userid");
+    // console.log("admin", admin);
+    return res.status(200).json({
+      message: "Successfully Fetched!",
+      data: admin,
+    });
   } catch (err) {
     return res.status(500).json({
       message: "Error Occured!",
@@ -125,16 +137,13 @@ const getAdminDetails = async (req, res) => {
 };
 
 const deleteAdmin = async (req, res) => {
-  console.log("hello delete");
+  // console.log("hello delete");
   try {
     const { id } = req.params;
-    console.log(id);
+    // console.log(id);
 
     const admin = await AdminDetailsModel.deleteOne({ userid: id });
     const user = await UserModel.deleteOne({ _id: id });
-
-    console.log("Deleted Admin", admin);
-    console.log("Deleted User", user);
 
     return res.status(200).json({
       message: "Successfully Deleted!",
@@ -144,15 +153,12 @@ const deleteAdmin = async (req, res) => {
       message: "Error Occured!",
     });
   }
-}
-
+};
 
 module.exports = {
   handleAddAdmin,
   getAdminDetails,
   handleUpdateAdmin,
-  handleAddAdmin,
   getAllAdmins,
   deleteAdmin,
-
 };

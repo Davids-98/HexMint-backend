@@ -3,45 +3,59 @@ const UserModel = require("../models/UserModel");
 
 //update user details
 const updateUserDetails = async (req, res) => {
-  console.log("walletaddress", req.body);
-  console.log("update user details calling");
+  // console.log("walletaddress", req.body);
+  // console.log("update user details calling");
   const { walletaddress, name, username, propic } = req.body;
-  console.log("wallet address", walletaddress);
+  // console.log("wallet address", walletaddress);
   // var profilepic = Buffer.from(propic, 'base64')
 
   //update user details
 
-    try {
-        const user = await UserModel.findOneAndUpdate({ walletaddress: walletaddress }, { name: name, username: username, propic: {
-            data: propic,
-            contentType: 'image/png'} }, { new: true }
-        );
-        console.log("user")
-        console.log(user)
-        if (user) {
-            return res.status(200).json({
-                "message": "success",
-                "user": user
-            })
-        } else {
-            return res.status(400).json({
-                "message": "error"
-            })
-        }
-    } catch (err) {
-        return res.status(400).json({
-            "message": err
-        })
-
+  try {
+    const user = await UserModel.findOneAndUpdate(
+      { walletaddress: walletaddress },
+      {
+        name: name,
+        username: username,
+        propic: {
+          data: propic,
+          contentType: "image/png",
+        },
+      },
+      { new: true }
+    );
+    // console.log("user");
+    // console.log(user);
+    if (user) {
+      return res.status(200).json({
+        message: "success",
+        user: user,
+      });
+    } else {
+      return res.status(400).json({
+        message: "error",
+      });
     }
+  } catch (err) {
+    return res.status(400).json({
+      message: err,
+    });
+  }
 };
 
-
 const createCollection = async (req, res) => {
-  console.log("hello");
+  // console.log("hello");
   // console.log("handle create collection calling, ", req.body);
-  const {collectionId, collectionName, collectionDescription, logoImg,NFTcount, floorprize, totalprize} = req.body;
-  console.log("passing data", collectionName, collectionDescription);
+  const {
+    collectionId,
+    collectionName,
+    collectionDescription,
+    logoImg,
+    NFTcount,
+    floorprize,
+    totalprize,
+  } = req.body;
+  // console.log("passing data", collectionName, collectionDescription);
 
   try {
     const collection = await CollectionModel.findOne({
@@ -79,32 +93,35 @@ const createCollection = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-  console.log("hello");
+  // console.log("hello");
   try {
     const users = await UserModel.find({ usertype: "Customer" });
 
-    console.log(users);
+    // console.log(users);
     return res.status(200).json({
       status: "success",
       data: users,
     });
   } catch (error) {
-    console.log("error");
+    return res.status(400).json({
+      status: "error",
+    });
+    // console.log("error");
   }
 };
 
 const getAllCollections = async (req, res) => {
-  console.log("hello");
+  // console.log("hello");
   try {
     const collections = await CollectionModel.find();
 
-    console.log(collections);
+    // console.log(collections);
     return res.status(200).json({
       status: "success",
       collections: collections,
     });
   } catch (error) {
-    console.log("error: ", error);
+    // console.log("error: ", error);
   }
 };
 
