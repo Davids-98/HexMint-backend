@@ -64,33 +64,19 @@ const handleUpdateAdmin = async (req, res) => {
     console.log("user id", user._id);
     if (user) {
       if (user.usertype === "Admin") {
-        console.log("user is admin");
-        const newEditRequest  = await AdminEditRequestModel.create({
+
+        const newAdminUpdatingDetails = await AdminUpdatingDetailsModel.create({
           userid: user._id,
-          status: "pending",
+          email: email,
+          mobilenumber: mobilenumber,
+          propic: propic,
         });
-        console.log("newEditRequest", newEditRequest);
 
-        if (newEditRequest) {
-          const newAdminUpdatingDetails = await AdminUpdatingDetailsModel.create({
-            requestid: newEditRequest._id,
-            email: email,
-            mobilenumber: mobilenumber,
-            propic: propic,
+        if (newAdminUpdatingDetails) {
+          return res.status(200).json({
+            message: "Successfully Updated!",
+            status: 200,
           });
-
-          if (newAdminUpdatingDetails) {
-            return res.status(200).json({
-              message: "Successfully Updated!",
-              status: 200,
-            });
-          } else {
-            return res.status(400).json({
-              message: "Error Occured!",
-              status: 400,
-            });
-          }
-
         } else {
           return res.status(400).json({
             message: "Error Occured!",
@@ -108,7 +94,6 @@ const handleUpdateAdmin = async (req, res) => {
         message: "Error Occured!",
         status: 400,
       });
-
     }
   
   } catch (err) {
