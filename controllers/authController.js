@@ -3,7 +3,7 @@ const UserModel = require("../models/UserModel");
 const handleConnectWallet = async (req, res) => {
   // console.log("handle connect wallet calling ")
   const { walletaddress } = req.body;
-  console.log("wallet address", walletaddress);
+  // console.log("wallet address", walletaddress);
 
   try {
     const user = await UserModel.findOne({
