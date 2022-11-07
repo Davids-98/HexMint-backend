@@ -6,17 +6,24 @@ var AdminUpdatingDetail = new Schema({
     required: true,
     ref: 'AdminEditRequest'
   },
-  name: {
-    type: String,
-    required: true
-  },
+  // name: {
+  //   type: String,
+  //   required: true
+  // },
   email: {
     type: String,
     required: true
   },
-  DOB: {
-    type: Date,
-    required: true
+  // DOB: {
+  //   type: Date,
+  //   required: true
+  // },
+  propic: {
+    type : String
+    // type: {
+    //   data: Buffer,
+    //   contentType: String
+    // }
   },
   mobilenumber: {
     type: Number,

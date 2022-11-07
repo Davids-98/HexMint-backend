@@ -3,11 +3,15 @@ var Schema = mongoose.Schema;
 var AdminEditRequest = new Schema({
   userid: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true
+    required: true,
+    ref: 'User'
   },
   status: {
-    type: Boolean,
-    required: true
+    type: String,
+    required: true,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'rejected'
+    
   },
 
 },{timestamps : true});

@@ -1,5 +1,7 @@
 const UserModel = require("../models/UserModel");
 const AdminDetailsModel = require("../models/AdminDetailsModel");
+const AdminEditRequestModel = require("../models/AdminEditRequestModel")
+const AdminUpdatingDetailsModel = require("../models/AdminUpdatingDetailsModel");
 
 const handleAddAdmin = async (req, res) => {
   // console.log("hello");
@@ -57,34 +59,93 @@ const handleUpdateAdmin = async (req, res) => {
   //Find and update admin details
   try {
     //Update userModel and adminDetailsModel
-    const updatedUser = await UserModel.findOneAndUpdate(
-      { walletaddress: walletaddress },
-      { propic: { data: propic, contentType: "image/png" } },
-      { new: true }
-    );
-    // console.log("user", updatedUser);
-    if (updatedUser) {
-      const updatedAdmin = await AdminDetailsModel.findOneAndUpdate(
-        { userid: updatedUser._id },
-        { email: email, mobilenumber: mobilenumber },
-        { new: true }
-      );
-      // console.log("admin", updatedAdmin);
-      return res.status(200).json({
-        message: "Successfully Updated!",
-        status: 200,
-      });
+    const user = await UserModel.findOne({ walletaddress: walletaddress });
+    console.log("user", user);
+    console.log("user id", user._id);
+    if (user) {
+      if (user.usertype === "Admin") {
+        console.log("user is admin");
+        const newEditRequest  = await AdminEditRequestModel.create({
+          userid: user._id,
+          status: "pending",
+        });
+        console.log("newEditRequest", newEditRequest);
+
+        if (newEditRequest) {
+          const newAdminUpdatingDetails = await AdminUpdatingDetailsModel.create({
+            requestid: newEditRequest._id,
+            email: email,
+            mobilenumber: mobilenumber,
+            propic: propic,
+          });
+
+          if (newAdminUpdatingDetails) {
+            return res.status(200).json({
+              message: "Successfully Updated!",
+              status: 200,
+            });
+          } else {
+            return res.status(400).json({
+              message: "Error Occured!",
+              status: 400,
+            });
+          }
+
+        } else {
+          return res.status(400).json({
+            message: "Error Occured!",
+            status: 400,
+          });
+        }
+      } else {
+        return res.status(400).json({
+          message: "Error Occured!",
+          status: 400,
+        });
+      }
     } else {
       return res.status(400).json({
         message: "Error Occured!",
         status: 400,
       });
+
     }
+  
   } catch (err) {
     return res.status(500).json({
       message: "Error Occured!",
     });
   }
+    
+
+  //   const updatedUser = await UserModel.findOneAndUpdate(
+  //     { walletaddress: walletaddress },
+  //     { propic: { data: propic, contentType: "image/png" } },
+  //     { new: true }
+  //   );
+  //   // console.log("user", updatedUser);
+  //   if (updatedUser) {
+  //     const updatedAdmin = await AdminDetailsModel.findOneAndUpdate(
+  //       { userid: updatedUser._id },
+  //       { email: email, mobilenumber: mobilenumber },
+  //       { new: true }
+  //     );
+  //     // console.log("admin", updatedAdmin);
+  //     return res.status(200).json({
+  //       message: "Successfully Updated!",
+  //       status: 200,
+  //     });
+  //   } else {
+  //     return res.status(400).json({
+  //       message: "Error Occured!",
+  //       status: 400,
+  //     });
+  //   }
+  // } catch (err) {
+  //   return res.status(500).json({
+  //     message: "Error Occured!",
+  //   });
+  // }
 };
 
 const getAllAdmins = async (req, res) => {
