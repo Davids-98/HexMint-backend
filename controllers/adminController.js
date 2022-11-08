@@ -1,6 +1,7 @@
 const UserModel = require("../models/UserModel");
 const AdminDetailsModel = require("../models/AdminDetailsModel");
 const AdminUpdatingDetailsModel = require("../models/AdminUpdatingDetailsModel");
+const UserStatusModel = require("../models/UserStatusModel");
 
 const handleAddAdmin = async (req, res) => {
   // console.log("hello");

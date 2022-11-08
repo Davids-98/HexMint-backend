@@ -137,6 +137,7 @@
 
 const CollectionModel = require("../models/CollectionModel");
 const UserModel = require("../models/UserModel");
+const UserStatusModel = require("../models/UserStatusModel");
 
 //update user details
 const updateUserDetails = async (req, res) => {
@@ -235,14 +236,46 @@ const createCollection = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-  // console.log("hello");
+  out = [];
   try {
     const users = await UserModel.find({ usertype: "Customer" });
+    const blockusers = await UserStatusModel.find({ isblocked: true });
+
+    const out = users.filter((user) => {
+      return !blockusers.some((blockuser) => {
+        return blockuser.userid.equals(user._id);
+      });
+    });
 
     // console.log(users);
     return res.status(200).json({
       status: "success",
-      data: users,
+      data: out,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "error",
+    });
+    // console.log("error");
+  }
+};
+
+const getAllBlockedUsers = async (req, res) => {
+  out = [];
+  try {
+    const users = await UserModel.find({ usertype: "Customer" });
+    const blockusers = await UserStatusModel.find({ isblocked: true });
+
+    const out = users.filter((user) => {
+      return blockusers.some((blockuser) => {
+        return blockuser.userid.equals(user._id);
+      });
+    });
+
+    // console.log(users);
+    return res.status(200).json({
+      status: "success",
+      data: out,
     });
   } catch (error) {
     return res.status(400).json({
@@ -272,10 +305,50 @@ const saveUserActivity = async (req, res) => {
   console.log(req.body);
 };
 
+const handleBlockUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const blockuser = await UserStatusModel.create({
+      userid: id,
+      isblocked: true,
+    });
+
+    return res.status(200).json({
+      data: blockuser,
+      message: "Successfully Blocked!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error Occured!",
+    });
+  }
+};
+
+const handleUnblockUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const blockuser = await UserStatusModel.findOneAndDelete({
+      userid: id,
+    });
+
+    return res.status(200).json({
+      data: blockuser,
+      message: "Successfully Unblocked!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error Occured!",
+    });
+  }
+};
+
 module.exports = {
   updateUserDetails,
   getAllUsers,
   createCollection,
   getAllCollections,
   saveUserActivity,
+  handleBlockUser,
+  getAllBlockedUsers,
+  handleUnblockUser,
 };
