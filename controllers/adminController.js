@@ -1,6 +1,5 @@
 const UserModel = require("../models/UserModel");
 const AdminDetailsModel = require("../models/AdminDetailsModel");
-const AdminEditRequestModel = require("../models/AdminEditRequestModel")
 const AdminUpdatingDetailsModel = require("../models/AdminUpdatingDetailsModel");
 
 const handleAddAdmin = async (req, res) => {
@@ -64,7 +63,6 @@ const handleUpdateAdmin = async (req, res) => {
     console.log("user id", user._id);
     if (user) {
       if (user.usertype === "Admin") {
-
         const newAdminUpdatingDetails = await AdminUpdatingDetailsModel.create({
           userid: user._id,
           email: email,
@@ -95,13 +93,11 @@ const handleUpdateAdmin = async (req, res) => {
         status: 400,
       });
     }
-  
   } catch (err) {
     return res.status(500).json({
       message: "Error Occured!",
     });
   }
-    
 
   //   const updatedUser = await UserModel.findOneAndUpdate(
   //     { walletaddress: walletaddress },
@@ -201,10 +197,103 @@ const deleteAdmin = async (req, res) => {
   }
 };
 
+const getAdminRequests = async (req, res) => {
+  const out = [];
+
+  try {
+    const requests = await AdminUpdatingDetailsModel.find();
+
+    for (var i = 0; i < requests.length; i++) {
+      const user = await UserModel.findOne({ _id: requests[i].userid });
+      const admin = await AdminDetailsModel.findOne({
+        userid: requests[i].userid,
+      });
+      const obj = {
+        userid: requests[i].userid,
+        walletaddress: user.walletaddress,
+        name: user.name,
+        DOB: admin.DOB,
+        exist: {
+          email: admin.email,
+          mobilenumber: admin.mobilenumber,
+          propic: admin.propic,
+        },
+        new: {
+          email: requests[i].email,
+          mobilenumber: requests[i].mobilenumber,
+          propic: requests[i].propic,
+        },
+      };
+      out.push(obj);
+    }
+
+    return res.status(200).json({
+      status: "ok",
+      message: "Successfully Fetched!",
+      data: out,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error Occured!",
+    });
+  }
+};
+
+const approveRequest = async (req, res) => {
+  // console.log("hello delete");
+  try {
+    const { id } = req.params;
+    const request = await AdminUpdatingDetailsModel.findOneAndDelete({
+      userid: id,
+    });
+    const user = await UserModel.findOneAndUpdate(
+      { _id: id },
+      { propic: request.propic },
+      { new: true }
+    );
+    const admin = await AdminDetailsModel.findOneAndUpdate(
+      { userid: id },
+      { email: request.email, mobilenumber: request.mobilenumber },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      data: { user: user, admin: admin },
+      message: "Successfully Approved!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error Occured!",
+    });
+  }
+};
+
+const declineRequest = async (req, res) => {
+  // console.log("hello delete");
+  try {
+    const { id } = req.params;
+    const request = await AdminUpdatingDetailsModel.findOneAndDelete({
+      userid: id,
+    });
+
+    return res.status(200).json({
+      data: request,
+      message: "Successfully Rejected!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error Occured!",
+    });
+  }
+};
+
 module.exports = {
   handleAddAdmin,
   getAdminDetails,
   handleUpdateAdmin,
   getAllAdmins,
   deleteAdmin,
+  getAdminRequests,
+  approveRequest,
+  declineRequest,
 };
