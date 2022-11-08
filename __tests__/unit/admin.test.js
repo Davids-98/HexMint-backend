@@ -108,7 +108,7 @@ describe("Admin Controller", () => {
     it("should responce admin updated", async () => {
       const req = {
         body: {
-          walletaddress: "0x123955089",
+          walletaddress: "0x123456789",
           email: "test2@gmail.com",
           mobilenumber: "1234567890",
           propic: "test-image",
