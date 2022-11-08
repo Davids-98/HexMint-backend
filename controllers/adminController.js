@@ -61,20 +61,35 @@ const handleUpdateAdmin = async (req, res) => {
     const user = await UserModel.findOne({ walletaddress: walletaddress });
     console.log("user", user);
     console.log("user id", user._id);
-    if (user) {
-      if (user.usertype === "Admin") {
-        const newAdminUpdatingDetails = await AdminUpdatingDetailsModel.create({
-          userid: user._id,
-          email: email,
-          mobilenumber: mobilenumber,
-          propic: propic,
-        });
+    const request = await AdminUpdatingDetailsModel.findOne({
+      userid: user._id,
+    });
+    if (request) {
+      return res.status(202).json({
+        message: "Already exists a request with this Wallet Address!",
+      });
+    } else {
+      if (user) {
+        if (user.usertype === "Admin") {
+          const newAdminUpdatingDetails =
+            await AdminUpdatingDetailsModel.create({
+              userid: user._id,
+              email: email,
+              mobilenumber: mobilenumber,
+              propic: propic,
+            });
 
-        if (newAdminUpdatingDetails) {
-          return res.status(200).json({
-            message: "Successfully Updated!",
-            status: 200,
-          });
+          if (newAdminUpdatingDetails) {
+            return res.status(200).json({
+              message: "Successfully Updated!",
+              status: 200,
+            });
+          } else {
+            return res.status(400).json({
+              message: "Error Occured!",
+              status: 400,
+            });
+          }
         } else {
           return res.status(400).json({
             message: "Error Occured!",
@@ -87,11 +102,6 @@ const handleUpdateAdmin = async (req, res) => {
           status: 400,
         });
       }
-    } else {
-      return res.status(400).json({
-        message: "Error Occured!",
-        status: 400,
-      });
     }
   } catch (err) {
     return res.status(500).json({
