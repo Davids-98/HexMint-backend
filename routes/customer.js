@@ -8,6 +8,8 @@ router
   .get("/get-collection-count", customerController.getAllCollections)
   .post("/create-collection", customerController.createCollection)
   .post("/save-user-activity", customerController.saveUserActivity)
-
+  .post("/block-user/:id", customerController.handleBlockUser)
+  .get("/get-all-blocked-users", customerController.getAllBlockedUsers)
+  .delete("/unblock-user/:id", customerController.handleUnblockUser);
 
 module.exports = router;
