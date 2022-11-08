@@ -4,7 +4,7 @@ const dbcon = require("../../db_connections");
 const uuid = require("uuid");
 
 const {
-  getUserDetails,
+  getUserDetailsFromWalletAddress,
   getUserType,
 } = require("../../controllers/userController");
 
@@ -35,7 +35,7 @@ describe("Customer Controller", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn().mockReturnThis(),
       };
-      const result = await getUserDetails(req, res);
+      const result = await getUserDetailsFromWalletAddress(req, res);
       expect(result.status).toHaveBeenCalledWith(200);
     });
     it("should responce error", async () => {
@@ -46,7 +46,7 @@ describe("Customer Controller", () => {
         status: jest.fn().mockReturnThis(),
         json: jest.fn().mockReturnThis(),
       };
-      const result = await getUserDetails(req, res);
+      const result = await getUserDetailsFromWalletAddress(req, res);
       expect(result.status).toHaveBeenCalledWith(400);
     });
   });

@@ -74,11 +74,11 @@ describe("Customer Controller", () => {
     it("should responce successfully created collection", async () => {
       const req = {
         body: {
+          userid: "0x123456789",
           collectionName: uuid.v4(),
-          collectionDescription: "test_description",
-          NFTcount: 3,
-          floorprize: 1,
-          totalprize: 2,
+          collectionDescription: "test",
+          logoImg: "test",
+          ownersCount: 1,
         },
       };
       const res = {
@@ -91,11 +91,11 @@ describe("Customer Controller", () => {
     it("should responce already exixts collection", async () => {
       const req = {
         body: {
-          collectionName: "test_name",
-          collectionDescription: "test_description",
-          NFTcount: 3,
-          floorprize: 1,
-          totalprize: 2,
+          userid: "0x123456789",
+          collectionName: "test",
+          collectionDescription: "test",
+          logoImg: "test",
+          ownersCount: 1,
         },
       };
       const res = {
@@ -105,13 +105,14 @@ describe("Customer Controller", () => {
       const result = await createCollection(req, res);
       expect(result.status).toHaveBeenCalledWith(200);
     });
-    it("should responce error", async () => {
+    it("should responce error invalid input", async () => {
       const req = {
         body: {
-          collectionDescription: "test_description",
-          NFTcount: 3,
-          floorprize: 1,
-          totalprize: 2,
+          userid: "0x123456789",
+          collectionName: 34,
+          collectionDescription: "test",
+          logoImg: "test",
+          ownersCount: "test",
         },
       };
       const res = {
@@ -120,6 +121,23 @@ describe("Customer Controller", () => {
       };
       const result = await createCollection(req, res);
       expect(result.status).toHaveBeenCalledWith(500);
+    });
+    it("should responce error", async () => {
+      const req = {
+        body: {
+          userid: "0x9",
+          collectionName: "test",
+          collectionDescription: "test",
+          logoImg: "test",
+          ownersCount: 1,
+        },
+      };
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      };
+      const result = await createCollection(req, res);
+      expect(result.status).toHaveBeenCalledWith(400);
     });
   });
   describe("Get All Collections", () => {

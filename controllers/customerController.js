@@ -154,7 +154,7 @@ const updateUserDetails = async (req, res) => {
       {
         name: name,
         username: username,
-        propic: propic
+        propic: propic,
       },
       { new: true }
     );
@@ -270,13 +270,12 @@ const getAllCollections = async (req, res) => {
 const saveUserActivity = async (req, res) => {
   console.log("in save user activity");
   console.log(req.body);
-}
+};
 
 module.exports = {
   updateUserDetails,
   getAllUsers,
   createCollection,
   getAllCollections,
-  saveUserActivity
+  saveUserActivity,
 };
-
