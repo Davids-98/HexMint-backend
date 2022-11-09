@@ -10,6 +10,8 @@ router
   .post("/save-user-activity", customerController.saveUserActivity)
   .post("/block-user/:id", customerController.handleBlockUser)
   .get("/get-all-blocked-users", customerController.getAllBlockedUsers)
-  .delete("/unblock-user/:id", customerController.handleUnblockUser);
+  .delete("/unblock-user/:id", customerController.handleUnblockUser)
+  .get("/get-reports", customerController.getReports)
+  .delete("/delete-report/:id", customerController.handleDeleteReport);
 
 module.exports = router;
