@@ -135,7 +135,9 @@
 //   saveUserActivity
 // };
 
+const AdminDetailsModel = require("../models/AdminDetailsModel");
 const CollectionModel = require("../models/CollectionModel");
+const ReportModel = require("../models/ReportModel");
 const UserModel = require("../models/UserModel");
 const UserStatusModel = require("../models/UserStatusModel");
 
@@ -342,6 +344,52 @@ const handleUnblockUser = async (req, res) => {
   }
 };
 
+const getReports = async (req, res) => {
+  console.log("in get reports");
+  const out = [];
+  try {
+    console.log("in try");
+    const reports = await ReportModel.find();
+    console.log(1);
+    for (let i = 0; i < reports.length; i++) {
+      const fromuser = await UserModel.findOne({ _id: reports[i].fromuserid });
+      const touser = await UserModel.findOne({ _id: reports[i].touserid });
+      const temp = {
+        _id: reports[i]._id,
+        from: fromuser,
+        to: touser,
+        reason: reports[i].reason,
+      };
+      out.push(temp);
+    }
+
+    return res.status(200).json({
+      data: out,
+      message: "Successfully Fetched!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error Occured!",
+    });
+  }
+};
+
+const handleDeleteReport = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const report = await ReportModel.findOneAndDelete({ _id: id });
+
+    return res.status(200).json({
+      data: report,
+      message: "Successfully Deleted!",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error Occured!",
+    });
+  }
+};
+
 module.exports = {
   updateUserDetails,
   getAllUsers,
@@ -351,4 +399,6 @@ module.exports = {
   handleBlockUser,
   getAllBlockedUsers,
   handleUnblockUser,
+  getReports,
+  handleDeleteReport,
 };
