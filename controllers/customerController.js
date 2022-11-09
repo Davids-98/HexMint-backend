@@ -135,6 +135,8 @@
 //   saveUserActivity
 // };
 
+const ActivityDetailsModel = require("../models/ActivityDetailsModel");
+const ActivityModel = require("../models/ActivityModel");
 const CollectionModel = require("../models/CollectionModel");
 const UserModel = require("../models/UserModel");
 
@@ -270,6 +272,61 @@ const getAllCollections = async (req, res) => {
 const saveUserActivity = async (req, res) => {
   console.log("in save user activity");
   console.log(req.body);
+
+  // find the user that who done the activity
+  try {
+    const user  = await UserModel.findOne({walletaddress: req.body.transaction.from});
+    console.log("user", user);
+    if(user){
+      const userId = user._id;
+      console.log("Inside user userId", userId);
+      //Create a new activity
+      const newActivity = await ActivityModel.create({
+        userid: userId,
+        activitytype: req.body.activityType,
+        NFTid: req.body.tokenID
+      });
+
+      console.log("new activity", newActivity);
+      if (newActivity) {
+        //Create a new activity details for the new activity
+        const Price = parseInt(req.body.transaction.value.hex, 16)
+
+        const newActivityDetails = await ActivityDetailsModel.create({
+          activityId: newActivity._id,
+          price: Price,
+          fromwalletaddress: '0x0000...',
+          towalletaddress: req.body.transaction.from,
+          time: req.body.transactionTime,
+          transactionhash: req.body.transaction.hash,
+        });
+        console.log("new activity details", newActivityDetails);
+        if (newActivityDetails) {
+          return res.status(200).json({
+            message: "success",
+          });
+        }else{
+          return res.status(400).json({
+            message: "error",
+          });
+        }
+      }else{
+        return res.status(400).json({
+          message: "error",
+        });
+      }
+    }else{
+      return res.status(400).json({
+        message: "error",
+      });
+
+    }
+  } catch (error) {
+    return res.status(400).json({
+      message: "error",
+    });
+  }
+
 };
 
 module.exports = {
