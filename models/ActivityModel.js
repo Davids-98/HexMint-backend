@@ -14,7 +14,7 @@ var Activity = new Schema({
   activitytype: {
     type: String,
     required: true,
-    enum: ["minted", "listed", "buyed", "transfered"]
+    enum: ["minted", "listed", "bought", "transferred"]
   },
   NFTid: {
     type: String,
