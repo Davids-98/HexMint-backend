@@ -11,7 +11,8 @@ router
   .post("/block-user/:id", customerController.handleBlockUser)
   .get("/get-all-blocked-users", customerController.getAllBlockedUsers)
   .delete("/unblock-user/:id", customerController.handleUnblockUser)
+  .post("/get-collection-name", customerController.getCollectionName)
   .get("/get-reports", customerController.getReports)
   .delete("/delete-report/:id", customerController.handleDeleteReport);
-
+  
 module.exports = router;

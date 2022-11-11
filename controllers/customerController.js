@@ -307,6 +307,33 @@ const getAllCollections = async (req, res) => {
   }
 };
 
+const getCollectionName = async (req, res) => {
+  console.log("In get Collection Name");
+  const { collectionID } = req.body;
+  console.log("collectionID", collectionID);
+  try {
+    const collection = await CollectionModel.findOne({
+      _id: collectionID,
+    });
+    console.log("collection", collection);
+    if (collection) {
+      collectionName = collection.collectionName;
+      return res.status(200).json({
+        message: "success",
+        collectionName: collectionName,
+      });
+    } else {
+      return res.status(400).json({
+        message: "error",
+      });
+    }
+  } catch (err) {
+    return res.status(400).json({
+      message: err,
+    });
+  }
+};
+
 const saveUserActivity = async (req, res) => {
   console.log("in save user activity");
   console.log(req.body);
@@ -319,35 +346,114 @@ const saveUserActivity = async (req, res) => {
       const userId = user._id;
       console.log("Inside user userId", userId);
       //Create a new activity
+      console.log("Activity type is",req.body.activityType)
+      console.log("NFT id is",parseInt(req.body.tokenID.tokenId.hex, 16)) 
       const newActivity = await ActivityModel.create({
         userid: userId,
         activitytype: req.body.activityType,
-        NFTid: req.body.tokenID
+        NFTid: (parseInt(req.body.tokenID.tokenId.hex, 16)).toString(),
       });
 
       console.log("new activity", newActivity);
       if (newActivity) {
+        console.log("new activity created transfer");
         //Create a new activity details for the new activity
         const Price = parseInt(req.body.transaction.value.hex, 16)
 
-        const newActivityDetails = await ActivityDetailsModel.create({
-          activityId: newActivity._id,
-          price: Price,
-          fromwalletaddress: '0x0000...',
-          towalletaddress: req.body.transaction.from,
-          time: req.body.transactionTime,
-          transactionhash: req.body.transaction.hash,
-        });
-        console.log("new activity details", newActivityDetails);
-        if (newActivityDetails) {
-          return res.status(200).json({
-            message: "success",
+        if(req.body.activityType === "minted"){
+          console.log("Inside minted");
+          const newActivityDetails = await ActivityDetailsModel.create({
+            activityId: newActivity._id,
+            price: Price,
+            fromwalletaddress: '0x0000...',
+            towalletaddress: req.body.transaction.from,
+            time: req.body.transactionTime,
+            transactionhash: req.body.transaction.hash,
           });
-        }else{
+
+          if (newActivityDetails) {
+            return res.status(200).json({
+              message: "success",
+            });
+          }else{
+            return res.status(400).json({
+              message: "error",
+            });
+          }
+
+        }else if(req.body.activityType === "transferred"){
+          console.log("Inside transferred");
+          const newActivityDetails = await ActivityDetailsModel.create({
+            activityId: newActivity._id,
+            price: Price,
+            fromwalletaddress: '0x0000...',
+            towalletaddress: req.body.tokenID.seller,
+            time: req.body.transactionTime,
+            transactionhash: req.body.transaction.hash,
+          });
+
+          if (newActivityDetails) {
+            console.log("new activity details created transfer");
+            return res.status(200).json({
+              message: "success",
+            });
+          }else{
+            return res.status(400).json({
+              message: "error",
+            });
+          }
+
+        }else if(req.body.activityType === "bought"){
+          console.log("Inside bought");
+          const newActivityDetails = await ActivityDetailsModel.create({
+            activityId: newActivity._id,
+            price: Price,
+            fromwalletaddress: req.body.tokenID.seller,
+            towalletaddress: '0x0000...' ,
+            time: req.body.transactionTime,
+            transactionhash: req.body.transaction.hash,
+          });
+
+          if (newActivityDetails) {
+            return res.status(200).json({
+              message: "success",
+            });
+          }else{
+            return res.status(400).json({
+              message: "error",
+            });
+          }
+
+        }else if(req.body.activityType === "listed"){
+          console.log("Inside listed");
+          const newActivityDetails = await ActivityDetailsModel.create({
+            activityId: newActivity._id,
+            price: Price,
+            fromwalletaddress: '0x0000...',
+            towalletaddress: '-',
+            time: req.body.transactionTime,
+            transactionhash: req.body.transaction.hash,
+          });
+
+          if (newActivityDetails) {
+            return res.status(200).json({
+              message: "success",
+            });
+          }else{
+            return res.status(400).json({
+              message: "error",
+            });
+          }
+        
+        } else {
+          
+          console.log("activity type not found");
           return res.status(400).json({
-            message: "error",
+            message: "Activity type not found",
+            
           });
         }
+
       }else{
         return res.status(400).json({
           message: "error",
@@ -459,6 +565,7 @@ module.exports = {
   handleBlockUser,
   getAllBlockedUsers,
   handleUnblockUser,
+  getCollectionName,
   getReports,
   handleDeleteReport,
 };
