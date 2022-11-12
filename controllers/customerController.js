@@ -334,6 +334,65 @@ const getCollectionName = async (req, res) => {
   }
 };
 
+const getUserActivityDetails = async (req, res) => {
+  console.log("In get User Activity Details");
+
+  const {walletAddress} = req.params;
+  console.log("walletAddress", walletAddress);
+  const dataArray = [];
+  const resultArray = [];
+  try {
+    const user = await UserModel.findOne({ walletaddress: walletAddress });
+    console.log("user", user);
+    if (user) {
+      const userActivity = await ActivityModel.find({ userid: user._id });
+      
+      if (userActivity) {
+        for (var i = 0; i < userActivity.length; i++) {
+          const activityDetails = await ActivityDetailsModel.findOne({
+            activityId: userActivity[i]._id,
+          }).populate("activityId");
+          // console.log("activityDetails", activityDetails);
+          dataArray.push(activityDetails);
+        }
+        console.log("resultArray", resultArray);
+
+        for (var i = 0; i < dataArray.length; i++){
+          item = dataArray[i];
+          resultArray.push({
+            activitytype: item.activityId.activitytype,
+            NFTid: item.activityId.NFTid,
+            price: item.price,
+            fromwalletaddress: item.fromwalletaddress,
+            towalletaddress: item.towalletaddress,
+            time: item.time,
+            transactionhash: item.transactionhash
+          })
+        }
+        
+        return res.status(200).json({
+          message: "success",
+          userActivity: resultArray,
+        });
+
+      } else {
+        return res.status(400).json({
+          message: "error",
+        });
+      }
+
+    } else {
+      return res.status(400).json({
+        message: "error",
+      });
+    }
+  }catch(err){
+    console.log(err);
+    return res.status(400).json({
+      message: err,
+    });
+  }
+};
 const saveUserActivity = async (req, res) => {
   console.log("in save user activity");
   console.log(req.body);
@@ -562,6 +621,7 @@ module.exports = {
   createCollection,
   getAllCollections,
   saveUserActivity,
+  getUserActivityDetails,
   handleBlockUser,
   getAllBlockedUsers,
   handleUnblockUser,

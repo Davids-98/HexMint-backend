@@ -18,6 +18,7 @@ var Activity = new Schema({
   },
   NFTid: {
     type: String,
+    
     required: true
   },
 
