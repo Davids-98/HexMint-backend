@@ -1,140 +1,3 @@
-// const CollectionModel = require("../models/CollectionModel");
-// const UserModel = require("../models/UserModel");
-
-// //update user details
-// const updateUserDetails = async (req, res) => {
-//   // console.log("walletaddress", req.body);
-//   // console.log("update user details calling");
-//   const { walletaddress, name, username, propic } = req.body;
-//   // console.log("wallet address", walletaddress);
-//   // var profilepic = Buffer.from(propic, 'base64')
-
-//   //update user details
-
-//   try {
-//     const user = await UserModel.findOneAndUpdate(
-//       { walletaddress: walletaddress },
-//       {
-//         name: name,
-//         username: username,
-//         propic : propic
-//       },
-//       { new: true }
-//     );
-//     // console.log("user");
-//     // console.log(user);
-//     if (user) {
-//       return res.status(200).json({
-//         message: "success",
-//         user: user,
-//       });
-//     } else {
-//       return res.status(400).json({
-//         message: "error",
-//       });
-//     }
-//   } catch (err) {
-//     return res.status(400).json({
-//       message: err,
-//     });
-//   }
-// };
-
-// const createCollection = async (req, res) => {
-//   // console.log("hello");
-//   // console.log("handle create collection calling, ", req.body);
-//   const {
-//     collectionId,
-//     collectionName,
-//     collectionDescription,
-//     logoImg,
-//     NFTcount,
-//     floorprize,
-//     totalprize,
-//   } = req.body;
-//   // console.log("passing data", collectionName, collectionDescription);
-
-//   try {
-//     const collection = await CollectionModel.findOne({
-//       collectionName: collectionName,
-//     });
-
-//     if (collection) {
-//       return res.status(200).json({
-//         message: "Already exists with this Collection Name!",
-//         collectionName: collection.collectionName,
-//         view: collection,
-//       });
-//     } else {
-//       const newCollection = await CollectionModel.create({
-//         // colletionId can get by calling the function "getCollectionCount"
-//         // collectionId: newCollection.collectionId,
-//         collectionName: collectionName,
-//         collectionDescription: collectionDescription,
-//         logoImg: { data: logoImg, contentType: "image/png" },
-//         NFTcount: NFTcount,
-//         floorprize: floorprize,
-//         totalprize: totalprize,
-//       });
-
-//       return res.status(202).json({
-//         message: "Successfully Added!",
-//         name: newCollection.collectionName,
-//       });
-//     }
-//   } catch (err) {
-//     return res.status(500).json({
-//       message: err,
-//     });
-//   }
-// };
-
-// const getAllUsers = async (req, res) => {
-//   // console.log("hello");
-//   try {
-//     const users = await UserModel.find({ usertype: "Customer" });
-
-//     // console.log(users);
-//     return res.status(200).json({
-//       status: "success",
-//       data: users,
-//     });
-//   } catch (error) {
-//     return res.status(400).json({
-//       status: "error",
-//     });
-//     // console.log("error");
-//   }
-// };
-
-// const getAllCollections = async (req, res) => {
-//   // console.log("hello");
-//   try {
-//     const collections = await CollectionModel.find();
-
-//     // console.log(collections);
-//     return res.status(200).json({
-//       status: "success",
-//       collections: collections,
-//     });
-//   } catch (error) {
-//     // console.log("error: ", error);
-//   }
-// };
-
-// const saveUserActivity = async (req, res) => {
-//   console.log("in save user activity");
-//   console.log(req.body);
-// }
-
-// module.exports = {
-//   updateUserDetails,
-//   getAllUsers,
-//   createCollection,
-//   getAllCollections,
-//   saveUserActivity
-// };
-
 
 const AdminDetailsModel = require("../models/AdminDetailsModel");
 
@@ -397,136 +260,146 @@ const saveUserActivity = async (req, res) => {
   console.log("in save user activity");
   console.log(req.body);
 
-  // find the user that who done the activity
-  try {
-    const user  = await UserModel.findOne({walletaddress: req.body.transaction.from});
-    console.log("user", user);
-    if(user){
-      const userId = user._id;
-      console.log("Inside user userId", userId);
-      //Create a new activity
-      console.log("Activity type is",req.body.activityType)
-      console.log("NFT id is",parseInt(req.body.tokenID.tokenId.hex, 16)) 
-      const newActivity = await ActivityModel.create({
-        userid: userId,
-        activitytype: req.body.activityType,
-        NFTid: (parseInt(req.body.tokenID.tokenId.hex, 16)).toString(),
-      });
+  //Access authentincate data
+  const {usertype} = req.data;
 
-      console.log("new activity", newActivity);
-      if (newActivity) {
-        console.log("new activity created transfer");
-        //Create a new activity details for the new activity
-        const Price = parseInt(req.body.transaction.value.hex, 16)
-
-        if(req.body.activityType === "minted"){
-          console.log("Inside minted");
-          const newActivityDetails = await ActivityDetailsModel.create({
-            activityId: newActivity._id,
-            price: Price,
-            fromwalletaddress: '0x0000...',
-            towalletaddress: req.body.transaction.from,
-            time: req.body.transactionTime,
-            transactionhash: req.body.transaction.hash,
-          });
-
-          if (newActivityDetails) {
-            return res.status(200).json({
-              message: "success",
+  if (usertype === "Customer") {
+    try {
+      const user  = await UserModel.findOne({walletaddress: req.body.transaction.from});
+      console.log("user", user);
+      if(user){
+        const userId = user._id;
+        console.log("Inside user userId", userId);
+        //Create a new activity
+        console.log("Activity type is",req.body.activityType)
+        console.log("NFT id is",parseInt(req.body.tokenID.tokenId.hex, 16)) 
+        const newActivity = await ActivityModel.create({
+          userid: userId,
+          activitytype: req.body.activityType,
+          NFTid: (parseInt(req.body.tokenID.tokenId.hex, 16)).toString(),
+        });
+  
+        console.log("new activity", newActivity);
+        if (newActivity) {
+          console.log("new activity created transfer");
+          //Create a new activity details for the new activity
+          const Price = parseInt(req.body.transaction.value.hex, 16)
+  
+          if(req.body.activityType === "minted"){
+            console.log("Inside minted");
+            const newActivityDetails = await ActivityDetailsModel.create({
+              activityId: newActivity._id,
+              price: Price,
+              fromwalletaddress: '0x0000...',
+              towalletaddress: req.body.transaction.from,
+              time: req.body.transactionTime,
+              transactionhash: req.body.transaction.hash,
             });
-          }else{
-            return res.status(400).json({
-              message: "error",
+  
+            if (newActivityDetails) {
+              return res.status(200).json({
+                message: "success",
+              });
+            }else{
+              return res.status(400).json({
+                message: "error",
+              });
+            }
+  
+          }else if(req.body.activityType === "transferred"){
+            console.log("Inside transferred");
+            const newActivityDetails = await ActivityDetailsModel.create({
+              activityId: newActivity._id,
+              price: Price,
+              fromwalletaddress: '0x0000...',
+              towalletaddress: req.body.tokenID.seller,
+              time: req.body.transactionTime,
+              transactionhash: req.body.transaction.hash,
             });
-          }
-
-        }else if(req.body.activityType === "transferred"){
-          console.log("Inside transferred");
-          const newActivityDetails = await ActivityDetailsModel.create({
-            activityId: newActivity._id,
-            price: Price,
-            fromwalletaddress: '0x0000...',
-            towalletaddress: req.body.tokenID.seller,
-            time: req.body.transactionTime,
-            transactionhash: req.body.transaction.hash,
-          });
-
-          if (newActivityDetails) {
-            console.log("new activity details created transfer");
-            return res.status(200).json({
-              message: "success",
+  
+            if (newActivityDetails) {
+              console.log("new activity details created transfer");
+              return res.status(200).json({
+                message: "success",
+              });
+            }else{
+              return res.status(400).json({
+                message: "error",
+              });
+            }
+  
+          }else if(req.body.activityType === "bought"){
+            console.log("Inside bought");
+            const newActivityDetails = await ActivityDetailsModel.create({
+              activityId: newActivity._id,
+              price: Price,
+              fromwalletaddress: req.body.tokenID.seller,
+              towalletaddress: '0x0000...' ,
+              time: req.body.transactionTime,
+              transactionhash: req.body.transaction.hash,
             });
-          }else{
-            return res.status(400).json({
-              message: "error",
+  
+            if (newActivityDetails) {
+              return res.status(200).json({
+                message: "success",
+              });
+            }else{
+              return res.status(400).json({
+                message: "error",
+              });
+            }
+  
+          }else if(req.body.activityType === "listed"){
+            console.log("Inside listed");
+            const newActivityDetails = await ActivityDetailsModel.create({
+              activityId: newActivity._id,
+              price: Price,
+              fromwalletaddress: '0x0000...',
+              towalletaddress: '-',
+              time: req.body.transactionTime,
+              transactionhash: req.body.transaction.hash,
             });
-          }
-
-        }else if(req.body.activityType === "bought"){
-          console.log("Inside bought");
-          const newActivityDetails = await ActivityDetailsModel.create({
-            activityId: newActivity._id,
-            price: Price,
-            fromwalletaddress: req.body.tokenID.seller,
-            towalletaddress: '0x0000...' ,
-            time: req.body.transactionTime,
-            transactionhash: req.body.transaction.hash,
-          });
-
-          if (newActivityDetails) {
-            return res.status(200).json({
-              message: "success",
-            });
-          }else{
-            return res.status(400).json({
-              message: "error",
-            });
-          }
-
-        }else if(req.body.activityType === "listed"){
-          console.log("Inside listed");
-          const newActivityDetails = await ActivityDetailsModel.create({
-            activityId: newActivity._id,
-            price: Price,
-            fromwalletaddress: '0x0000...',
-            towalletaddress: '-',
-            time: req.body.transactionTime,
-            transactionhash: req.body.transaction.hash,
-          });
-
-          if (newActivityDetails) {
-            return res.status(200).json({
-              message: "success",
-            });
-          }else{
-            return res.status(400).json({
-              message: "error",
-            });
-          }
-        
-        } else {
+  
+            if (newActivityDetails) {
+              return res.status(200).json({
+                message: "success",
+              });
+            }else{
+              return res.status(400).json({
+                message: "error",
+              });
+            }
           
-          console.log("activity type not found");
-          return res.status(400).json({
-            message: "Activity type not found",
+          } else {
             
+            console.log("activity type not found");
+            return res.status(400).json({
+              message: "Activity type not found",
+              
+            });
+          }
+  
+        }else{
+          return res.status(400).json({
+            message: "error",
           });
         }
-
       }else{
         return res.status(400).json({
           message: "error",
         });
+  
       }
-    }else{
+    } catch (error) {
       return res.status(400).json({
         message: "error",
       });
-
     }
-  } catch (error) {
-    return res.status(400).json({
-      message: "error",
+    
+  } else {
+    return res.status(401).json({
+      message: "You are not authorized to perform this action",
+      status : 401
     });
   }
 
