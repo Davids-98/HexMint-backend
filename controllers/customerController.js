@@ -11,41 +11,47 @@ const UserStatusModel = require("../models/UserStatusModel");
 
 //update user details
 const updateUserDetails = async (req, res) => {
-  // console.log("walletaddress", req.body);
-  // console.log("update user details calling");
+
   const { walletaddress, name, username, propic } = req.body;
-  // console.log("wallet address", walletaddress);
-  // var profilepic = Buffer.from(propic, 'base64')
 
-  //update user details
+  //authariation check
+  const {usertype} = req.data;
 
-  try {
-    const user = await UserModel.findOneAndUpdate(
-      { walletaddress: walletaddress },
-      {
-        name: name,
-        username: username,
-        propic: propic,
-      },
-      { new: true }
-    );
-    console.log("user");
-    console.log(user);
-    if (user) {
-      return res.status(200).json({
-        message: "success",
-        user: user,
-      });
-    } else {
-      return res.status(400).json({
-        message: "error",
-      });
-    }
-  } catch (err) {
-    return res.status(400).json({
-      message: err,
+  if(usertype !== "Customer"){
+    return res.status(401).json({
+      message: "Unauthorized",
     });
   }
+  else{
+    try {
+      const user = await UserModel.findOneAndUpdate(
+        { walletaddress: walletaddress },
+        {
+          name: name,
+          username: username,
+          propic: propic,
+        },
+        { new: true }
+      );
+      console.log("user");
+      console.log(user);
+      if (user) {
+        return res.status(200).json({
+          message: "success",
+          user: user,
+        });
+      } else {
+        return res.status(400).json({
+          message: "error",
+        });
+      }
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  }
+
 };
 
 const createCollection = async (req, res) => {
