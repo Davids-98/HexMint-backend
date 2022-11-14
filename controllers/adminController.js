@@ -52,39 +52,49 @@ const handleAddAdmin = async (req, res) => {
 };
 
 const handleUpdateAdmin = async (req, res) => {
-  // console.log("handle update admin calling, ", req.body);
+
   const { walletaddress, email, mobilenumber, propic } = req.body;
-  // console.log("passing data", email, mobilenumber, propic);
-
-  //Find and update admin details
-  try {
-    //Update userModel and adminDetailsModel
-    const user = await UserModel.findOne({ walletaddress: walletaddress });
-    console.log("user", user);
-    console.log("user id", user._id);
-    const request = await AdminUpdatingDetailsModel.findOne({
-      userid: user._id,
+  const {usertype} = req.data;
+  console.log("in handle update admin and usertype", usertype);
+  if (usertype !== "Admin") {
+    return res.status(401).json({
+      message: "Unauthorized!",
     });
-    if (request) {
-      return res.status(202).json({
-        message: "Already exists a request with this Wallet Address!",
+  }else{
+    try {
+      //Update userModel and adminDetailsModel
+      const user = await UserModel.findOne({ walletaddress: walletaddress });
+      console.log("user", user);
+      console.log("user id", user._id);
+      const request = await AdminUpdatingDetailsModel.findOne({
+        userid: user._id,
       });
-    } else {
-      if (user) {
-        if (user.usertype === "Admin") {
-          const newAdminUpdatingDetails =
-            await AdminUpdatingDetailsModel.create({
-              userid: user._id,
-              email: email,
-              mobilenumber: mobilenumber,
-              propic: propic,
-            });
+      if (request) {
+        return res.status(202).json({
+          message: "Already exists a request with this Wallet Address!",
+        });
+      } else {
+        if (user) {
+          if (user.usertype === "Admin") {
+            const newAdminUpdatingDetails =
+              await AdminUpdatingDetailsModel.create({
+                userid: user._id,
+                email: email,
+                mobilenumber: mobilenumber,
+                propic: propic,
+              });
 
-          if (newAdminUpdatingDetails) {
-            return res.status(200).json({
-              message: "Successfully Updated!",
-              status: 200,
-            });
+            if (newAdminUpdatingDetails) {
+              return res.status(200).json({
+                message: "Successfully Updated!",
+                status: 200,
+              });
+            } else {
+              return res.status(400).json({
+                message: "Error Occured!",
+                status: 400,
+              });
+            }
           } else {
             return res.status(400).json({
               message: "Error Occured!",
@@ -97,47 +107,14 @@ const handleUpdateAdmin = async (req, res) => {
             status: 400,
           });
         }
-      } else {
-        return res.status(400).json({
-          message: "Error Occured!",
-          status: 400,
-        });
       }
+    } catch (err) {
+      return res.status(500).json({
+        message: "Error Occured!",
+      });
     }
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error Occured!",
-    });
   }
 
-  //   const updatedUser = await UserModel.findOneAndUpdate(
-  //     { walletaddress: walletaddress },
-  //     { propic: { data: propic, contentType: "image/png" } },
-  //     { new: true }
-  //   );
-  //   // console.log("user", updatedUser);
-  //   if (updatedUser) {
-  //     const updatedAdmin = await AdminDetailsModel.findOneAndUpdate(
-  //       { userid: updatedUser._id },
-  //       { email: email, mobilenumber: mobilenumber },
-  //       { new: true }
-  //     );
-  //     // console.log("admin", updatedAdmin);
-  //     return res.status(200).json({
-  //       message: "Successfully Updated!",
-  //       status: 200,
-  //     });
-  //   } else {
-  //     return res.status(400).json({
-  //       message: "Error Occured!",
-  //       status: 400,
-  //     });
-  //   }
-  // } catch (err) {
-  //   return res.status(500).json({
-  //     message: "Error Occured!",
-  //   });
-  // }
 };
 
 const getAllAdmins = async (req, res) => {
