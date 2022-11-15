@@ -52,17 +52,14 @@ const handleAddAdmin = async (req, res) => {
 };
 
 const handleUpdateAdmin = async (req, res) => {
-
-
   const { walletaddress, email, mobilenumber, propic } = req.body;
-  const {usertype} = req.data;
+  const { usertype } = req.data;
   console.log("in handle update admin and usertype", usertype);
   if (usertype !== "Admin") {
     return res.status(401).json({
       message: "Unauthorized!",
     });
-  }else{
-
+  } else {
     try {
       //Update userModel and adminDetailsModel
       const user = await UserModel.findOne({ walletaddress: walletaddress });
@@ -117,12 +114,8 @@ const handleUpdateAdmin = async (req, res) => {
         status: 500,
       });
     }
-  } else {
-    return res.status(401).json({
-      message: "Unauthorized!",
-      status: 401,
-    });
-
+  }
+};
 
 const getAllAdmins = async (req, res) => {
   // console.log("hello");
