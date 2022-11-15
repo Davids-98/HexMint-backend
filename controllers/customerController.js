@@ -168,26 +168,6 @@ const getAllBlockedUsers = async (req, res) => {
         return blockusers.some((blockuser) => {
           return blockuser.userid.equals(user._id);
         });
-
-      });
-
-      } catch (error) {
-        return res.status(400).json({
-          status: "error",
-        });
-        // console.log("error");
-      }
-    }
-};
-
-const getAllCollections = async (req, res) => {
-  // console.log("hello");
-
-
-      // console.log(users);
-      return res.status(200).json({
-        status: "success",
-        data: out,
       });
     } catch (error) {
       return res.status(400).json({
@@ -208,7 +188,10 @@ const getAllCollections = async (req, res) => {
       collections: collections,
     });
   } catch (error) {
-    // console.log("error: ", error);
+    return res.status(400).json({
+      message: "error",
+      status: 400,
+    });
   }
 };
 
