@@ -124,11 +124,9 @@ const createCollection = async (req, res) => {
 const getAllUsers = async (req, res) => {
   const { usertype } = req.data;
 
-  if (usertype !== "Admin") {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
-  } else {
+  if (usertype === "Admin" || usertype === "Super Admin") {
+
+
     out = [];
       try {
         const users = await UserModel.find({ usertype: "Customer" });
@@ -150,14 +148,20 @@ const getAllUsers = async (req, res) => {
           status: "error",
         });
         // console.log("error");
-      }
     }
+  } else {
+    return res.status(401).json({
+      message: "Unauthorized",
+
+    });
+  }
 };
 
 const getAllBlockedUsers = async (req, res) => {
   const { usertype } = req.data;
 
   if (usertype !== "Admin") {
+    
     return res.status(401).json({
       message: "Unauthorized",
     });
@@ -191,11 +195,6 @@ const getAllCollections = async (req, res) => {
   // console.log("hello");
   const { usertype } = req.data;
 
-  if (usertype !== "Customer") {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
-  } else {
     try {
       const collections = await CollectionModel.find();
   
@@ -209,7 +208,6 @@ const getAllCollections = async (req, res) => {
     }
   }
 
-};
 
 const getCollectionName = async (req, res) => {
   const { usertype } = req.data;
