@@ -4,7 +4,7 @@ const customerController = require("../controllers/customerController");
 const authController = require("../controllers/authController");
 
 router
-  .post("/update-details", customerController.updateUserDetails)
+  .post("/update-details",authController.authenticate ,customerController.updateUserDetails)
   .get("/get-all-customers", customerController.getAllUsers)
   .get("/get-collection-count", customerController.getAllCollections)
   .post("/create-collection", customerController.createCollection)

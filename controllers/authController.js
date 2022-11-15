@@ -18,7 +18,6 @@ const handleLogin = async (walletaddress, usertype) => {
       status : 200,
       message: "Succesfull!",
       token: token,
-      usertype: usertype,
     });
   } catch(err){
     return({
