@@ -124,6 +124,8 @@ const createCollection = async (req, res) => {
 const getAllUsers = async (req, res) => {
   const { usertype } = req.data;
 
+  console.log("In get all users...............", usertype);
+  console.log(usertype === "Super Admin" || usertype === "Admin");
   if (usertype === "Admin" || usertype === "Super Admin") {
 
 
@@ -193,7 +195,6 @@ const getAllBlockedUsers = async (req, res) => {
 
 const getAllCollections = async (req, res) => {
   // console.log("hello");
-  const { usertype } = req.data;
 
     try {
       const collections = await CollectionModel.find();

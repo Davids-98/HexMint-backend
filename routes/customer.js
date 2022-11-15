@@ -6,7 +6,7 @@ const authController = require("../controllers/authController");
 router
   .post("/update-details",authController.authenticate ,customerController.updateUserDetails)
   .get("/get-all-customers", authController.authenticate ,customerController.getAllUsers)
-  .get("/get-collection-count",authController.authenticate, customerController.getAllCollections)
+  .get("/get-collection-count", customerController.getAllCollections)
   .post("/create-collection",authController.authenticate, customerController.createCollection)
   .post("/save-user-activity",authController.authenticate,customerController.saveUserActivity)
   .get("/get-user-activity-details/:walletAddress", authController.authenticate ,customerController.getUserActivityDetails)

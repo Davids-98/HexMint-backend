@@ -10,7 +10,6 @@ router.get(
 );
 router.get(
   "/user-details-from-userid",
-  authController.authenticate,
   userController.getUserDetailsFromUserId
 );
 
