@@ -118,6 +118,8 @@ const AdminDetailsModel = require("../models/AdminDetailsModel");
 const getUserDetailsFromWalletAddress = async (req, res) => {
   const { walletAddress } = req.query;
   const { usertype } = req.data;
+//   console.log("In get user d from wallet address", usertype);
+//   console.log(usertype === "Super Admin")
   if (usertype === "Super Admin") {
     return res.status(401).json({
       message: "Unauthorized Access!",
@@ -172,13 +174,7 @@ const getUserDetailsFromWalletAddress = async (req, res) => {
 
 const getUserDetailsFromUserId = async (req, res) => {
   const { userid } = req.query;
-  const { usertype } = req.data;
-  if (usertype === "Super Admin") {
-    return res.status(401).json({
-      message: "Unauthorized Access!",
-      status: 401,
-    });
-  } else {
+
     try {
       const user = await UserModel.findOne({ _id: userid });
       // console.log(user)
@@ -222,7 +218,7 @@ const getUserDetailsFromUserId = async (req, res) => {
         message: err,
       });
     }
-  }
+  
 };
 
 module.exports = {
