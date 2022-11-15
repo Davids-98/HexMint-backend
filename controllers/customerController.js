@@ -57,6 +57,9 @@ const updateUserDetails = async (req, res) => {
 const createCollection = async (req, res) => {
   // console.log("hello");
   // console.log("handle create collection calling, ", req.body);
+  
+  const {usertype} = req.data;
+
   const {
     userid,
     collectionName,
@@ -65,142 +68,182 @@ const createCollection = async (req, res) => {
     ownersCount,
   } = req.body;
 
-  try {
-    const user = await UserModel.findOne({ walletaddress: userid });
-    // console.log("user",user," ",user._id);
-    if (user) {
-      try {
-        const collection = await CollectionModel.findOne({
-          collectionName: collectionName,
-        });
-
-        if (collection) {
-          return res.status(200).json({
-            message: "Already exists with this Collection Name!",
-            collectionName: collection.collectionName,
-            view: collection,
-          });
-        } else {
-          const newCollection = await CollectionModel.create({
-            userid: user._id,
+  if(usertype !== "Customer"){
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
+  }else{
+    try {
+      const user = await UserModel.findOne({ walletaddress: userid });
+      // console.log("user",user," ",user._id);
+      if (user) {
+        try {
+          const collection = await CollectionModel.findOne({
             collectionName: collectionName,
-            collectionDescription: collectionDescription,
-            logoImg: logoImg,
-            ownersCount: ownersCount,
           });
-
-          return res.status(202).json({
-            message: "Successfully Added!",
-            name: newCollection.collectionName,
+  
+          if (collection) {
+            return res.status(200).json({
+              message: "Already exists with this Collection Name!",
+              collectionName: collection.collectionName,
+              view: collection,
+            });
+          } else {
+            const newCollection = await CollectionModel.create({
+              userid: user._id,
+              collectionName: collectionName,
+              collectionDescription: collectionDescription,
+              logoImg: logoImg,
+              ownersCount: ownersCount,
+            });
+  
+            return res.status(202).json({
+              message: "Successfully Added!",
+              name: newCollection.collectionName,
+            });
+          }
+        } catch (err) {
+          return res.status(500).json({
+            message: err,
           });
         }
-      } catch (err) {
-        return res.status(500).json({
-          message: err,
+      } else {
+        return res.status(400).json({
+          message: "user not existing",
         });
       }
-    } else {
+    } catch (err) {
       return res.status(400).json({
-        message: "user not existing",
+        message: err,
       });
     }
-  } catch (err) {
-    return res.status(400).json({
-      message: err,
-    });
   }
+  
 };
 
 const getAllUsers = async (req, res) => {
-  out = [];
-  try {
-    const users = await UserModel.find({ usertype: "Customer" });
-    const blockusers = await UserStatusModel.find({ isblocked: true });
+  const { usertype } = req.data;
 
-    const out = users.filter((user) => {
-      return !blockusers.some((blockuser) => {
-        return blockuser.userid.equals(user._id);
-      });
+  if (usertype !== "Admin") {
+    return res.status(401).json({
+      message: "Unauthorized",
     });
+  } else {
+    out = [];
+      try {
+        const users = await UserModel.find({ usertype: "Customer" });
+        const blockusers = await UserStatusModel.find({ isblocked: true });
 
-    // console.log(users);
-    return res.status(200).json({
-      status: "success",
-      data: out,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      status: "error",
-    });
-    // console.log("error");
-  }
+        const out = users.filter((user) => {
+          return !blockusers.some((blockuser) => {
+            return blockuser.userid.equals(user._id);
+          });
+        });
+
+        // console.log(users);
+        return res.status(200).json({
+          status: "success",
+          data: out,
+        });
+      } catch (error) {
+        return res.status(400).json({
+          status: "error",
+        });
+        // console.log("error");
+      }
+    }
 };
 
 const getAllBlockedUsers = async (req, res) => {
-  out = [];
-  try {
-    const users = await UserModel.find({ usertype: "Customer" });
-    const blockusers = await UserStatusModel.find({ isblocked: true });
+  const { usertype } = req.data;
 
-    const out = users.filter((user) => {
-      return blockusers.some((blockuser) => {
-        return blockuser.userid.equals(user._id);
-      });
+  if (usertype !== "Admin") {
+    return res.status(401).json({
+      message: "Unauthorized",
     });
+  } else {
+      out = [];
+      try {
+        const users = await UserModel.find({ usertype: "Customer" });
+        const blockusers = await UserStatusModel.find({ isblocked: true });
 
-    // console.log(users);
-    return res.status(200).json({
-      status: "success",
-      data: out,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      status: "error",
-    });
-    // console.log("error");
-  }
+        const out = users.filter((user) => {
+          return blockusers.some((blockuser) => {
+            return blockuser.userid.equals(user._id);
+          });
+        });
+
+        // console.log(users);
+        return res.status(200).json({
+          status: "success",
+          data: out,
+        });
+      } catch (error) {
+        return res.status(400).json({
+          status: "error",
+        });
+        // console.log("error");
+      }
+    }
 };
 
 const getAllCollections = async (req, res) => {
   // console.log("hello");
-  try {
-    const collections = await CollectionModel.find();
+  const { usertype } = req.data;
 
-    // console.log(collections);
-    return res.status(200).json({
-      status: "success",
-      collections: collections,
+  if (usertype !== "Customer") {
+    return res.status(401).json({
+      message: "Unauthorized",
     });
-  } catch (error) {
-    // console.log("error: ", error);
+  } else {
+    try {
+      const collections = await CollectionModel.find();
+  
+      // console.log(collections);
+      return res.status(200).json({
+        status: "success",
+        collections: collections,
+      });
+    } catch (error) {
+      // console.log("error: ", error);
+    }
   }
+
 };
 
 const getCollectionName = async (req, res) => {
-  console.log("In get Collection Name");
-  const { collectionID } = req.body;
-  console.log("collectionID", collectionID);
-  try {
-    const collection = await CollectionModel.findOne({
-      _id: collectionID,
+  const { usertype } = req.data;
+
+  if (usertype !== "Customer") {
+    return res.status(401).json({
+      message: "Unauthorized",
     });
-    console.log("collection", collection);
-    if (collection) {
-      collectionName = collection.collectionName;
-      return res.status(200).json({
-        message: "success",
-        collectionName: collectionName,
+  } else {
+    const { collectionID } = req.body;
+    console.log("collectionID", collectionID);
+    try {
+      const collection = await CollectionModel.findOne({
+        _id: collectionID,
       });
-    } else {
+      console.log("collection", collection);
+      if (collection) {
+        collectionName = collection.collectionName;
+        return res.status(200).json({
+          message: "success",
+          collectionName: collectionName,
+        });
+      } else {
+        return res.status(400).json({
+          message: "error",
+        });
+      }
+    } catch (err) {
       return res.status(400).json({
-        message: "error",
+        message: err,
       });
     }
-  } catch (err) {
-    return res.status(400).json({
-      message: err,
-    });
   }
+
 };
 
 const getUserActivityDetails = async (req, res) => {
@@ -208,59 +251,68 @@ const getUserActivityDetails = async (req, res) => {
 
   const {walletAddress} = req.params;
   console.log("walletAddress", walletAddress);
-  const dataArray = [];
-  const resultArray = [];
-  try {
-    const user = await UserModel.findOne({ walletaddress: walletAddress });
-    console.log("user", user);
-    if (user) {
-      const userActivity = await ActivityModel.find({ userid: user._id });
-      
-      if (userActivity) {
-        for (var i = 0; i < userActivity.length; i++) {
-          const activityDetails = await ActivityDetailsModel.findOne({
-            activityId: userActivity[i]._id,
-          }).populate("activityId");
-          // console.log("activityDetails", activityDetails);
-          dataArray.push(activityDetails);
-        }
-        console.log("resultArray", resultArray);
+  const {usertype} = req.data;
 
-        for (var i = 0; i < dataArray.length; i++){
-          item = dataArray[i];
-          resultArray.push({
-            activitytype: item.activityId.activitytype,
-            NFTid: item.activityId.NFTid,
-            price: item.price,
-            fromwalletaddress: item.fromwalletaddress,
-            towalletaddress: item.towalletaddress,
-            time: item.time,
-            transactionhash: item.transactionhash
-          })
-        }
+  if(usertype !== "Customer"){
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
+  }else{
+    const dataArray = [];
+    const resultArray = [];
+    try {
+      const user = await UserModel.findOne({ walletaddress: walletAddress });
+      console.log("user", user);
+      if (user) {
+        const userActivity = await ActivityModel.find({ userid: user._id });
         
-        return res.status(200).json({
-          message: "success",
-          userActivity: resultArray,
-        });
+        if (userActivity) {
+          for (var i = 0; i < userActivity.length; i++) {
+            const activityDetails = await ActivityDetailsModel.findOne({
+              activityId: userActivity[i]._id,
+            }).populate("activityId");
+            // console.log("activityDetails", activityDetails);
+            dataArray.push(activityDetails);
+          }
+          console.log("resultArray", resultArray);
+
+          for (var i = 0; i < dataArray.length; i++){
+            item = dataArray[i];
+            resultArray.push({
+              activitytype: item.activityId.activitytype,
+              NFTid: item.activityId.NFTid,
+              price: item.price,
+              fromwalletaddress: item.fromwalletaddress,
+              towalletaddress: item.towalletaddress,
+              time: item.time,
+              transactionhash: item.transactionhash
+            })
+          }
+          
+          return res.status(200).json({
+            message: "success",
+            userActivity: resultArray,
+          });
+
+        } else {
+          return res.status(400).json({
+            message: "error",
+          });
+        }
 
       } else {
         return res.status(400).json({
           message: "error",
         });
       }
-
-    } else {
+    }catch(err){
+      console.log(err);
       return res.status(400).json({
-        message: "error",
+        message: err,
       });
     }
-  }catch(err){
-    console.log(err);
-    return res.status(400).json({
-      message: err,
-    });
-  }
+}
+  
 };
 const saveUserActivity = async (req, res) => {
   console.log("in save user activity");
@@ -412,86 +464,125 @@ const saveUserActivity = async (req, res) => {
 };
 
 const handleBlockUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const blockuser = await UserStatusModel.create({
-      userid: id,
-      isblocked: true,
+  const {usertype} = req.data;
+  if (usertype !== "Admin") {
+    return res.status(401).json({
+      message: "You are not authorized to perform this action",
+      status : 401
     });
-
-    return res.status(200).json({
-      data: blockuser,
-      message: "Successfully Blocked!",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error Occured!",
-    });
+  }else{
+    try {
+      const { id } = req.params;
+      const blockuser = await UserStatusModel.create({
+        userid: id,
+        isblocked: true,
+      });
+  
+      return res.status(200).json({
+        data: blockuser,
+        message: "Successfully Blocked!",
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error Occured!",
+      });
+    }
   }
+
 };
 
 const handleUnblockUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const blockuser = await UserStatusModel.findOneAndDelete({
-      userid: id,
+  const {usertype} = req.data;
+  if (usertype !== "Admin") {
+    return res.status(401).json({
+      message: "You are not authorized to perform this action",
+      status : 401
     });
-
-    return res.status(200).json({
-      data: blockuser,
-      message: "Successfully Unblocked!",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error Occured!",
-    });
+  }else{
+    try {
+      const { id } = req.params;
+      const blockuser = await UserStatusModel.findOneAndDelete({
+        userid: id,
+      });
+  
+      return res.status(200).json({
+        data: blockuser,
+        message: "Successfully Unblocked!",
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error Occured!",
+      });
+    }
   }
+
 };
 
 const getReports = async (req, res) => {
   console.log("in get reports");
-  const out = [];
-  try {
-    console.log("in try");
-    const reports = await ReportModel.find();
-    console.log(1);
-    for (let i = 0; i < reports.length; i++) {
-      const fromuser = await UserModel.findOne({ _id: reports[i].fromuserid });
-      const touser = await UserModel.findOne({ _id: reports[i].touserid });
-      const temp = {
-        _id: reports[i]._id,
-        from: fromuser,
-        to: touser,
-        reason: reports[i].reason,
-      };
-      out.push(temp);
-    }
 
-    return res.status(200).json({
-      data: out,
-      message: "Successfully Fetched!",
+  const { usertype } = req.data;
+
+  if (usertype !== "Admin") {
+    return res.status(401).json({
+      message: "You are not authorized to perform this action",
+      status : 401
     });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error Occured!",
-    });
+  }else{
+    const out = [];
+    try {
+      console.log("in try");
+      const reports = await ReportModel.find();
+      console.log(1);
+      for (let i = 0; i < reports.length; i++) {
+        const fromuser = await UserModel.findOne({ _id: reports[i].fromuserid });
+        const touser = await UserModel.findOne({ _id: reports[i].touserid });
+        const temp = {
+          _id: reports[i]._id,
+          from: fromuser,
+          to: touser,
+          reason: reports[i].reason,
+        };
+        out.push(temp);
+      }
+  
+      return res.status(200).json({
+        data: out,
+        message: "Successfully Fetched!",
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error Occured!",
+      });
+    }
   }
+
 };
 
 const handleDeleteReport = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const report = await ReportModel.findOneAndDelete({ _id: id });
+  const usertype = req.data;
 
-    return res.status(200).json({
-      data: report,
-      message: "Successfully Deleted!",
+  if (usertype !== "Admin") {
+    return res.status(401).json({
+      message: "You are not authorized to perform this action",
+      status : 401
     });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error Occured!",
-    });
+  }else{
+    try {
+      const { id } = req.params;
+      const report = await ReportModel.findOneAndDelete({ _id: id });
+  
+      return res.status(200).json({
+        data: report,
+        message: "Successfully Deleted!",
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error Occured!",
+      });
+    }
   }
+
 };
 
 module.exports = {
