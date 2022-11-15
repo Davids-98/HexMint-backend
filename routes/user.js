@@ -11,6 +11,7 @@ router.get(
 router.get(
   "/user-details-from-userid",
 
+
   userController.getUserDetailsFromUserId
 );
 

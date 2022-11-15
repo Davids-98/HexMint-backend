@@ -4,6 +4,7 @@ const customerController = require("../controllers/customerController");
 const authController = require("../controllers/authController");
 
 router
+
   .post(
     "/update-details",
     authController.authenticate,
@@ -60,5 +61,6 @@ router
     authController.authenticate,
     customerController.handleDeleteReport
   );
+
 
 module.exports = router;

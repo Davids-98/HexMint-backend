@@ -119,6 +119,8 @@ const createCollection = async (req, res) => {
 const getAllUsers = async (req, res) => {
   const { usertype } = req.data;
 
+  console.log("In get all users...............", usertype);
+  console.log(usertype === "Super Admin" || usertype === "Admin");
   if (usertype === "Admin" || usertype === "Super Admin") {
     out = [];
     try {
@@ -166,7 +168,21 @@ const getAllBlockedUsers = async (req, res) => {
         return blockusers.some((blockuser) => {
           return blockuser.userid.equals(user._id);
         });
+
       });
+
+      } catch (error) {
+        return res.status(400).json({
+          status: "error",
+        });
+        // console.log("error");
+      }
+    }
+};
+
+const getAllCollections = async (req, res) => {
+  // console.log("hello");
+
 
       // console.log(users);
       return res.status(200).json({

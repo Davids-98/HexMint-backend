@@ -118,6 +118,8 @@ const AdminDetailsModel = require("../models/AdminDetailsModel");
 const getUserDetailsFromWalletAddress = async (req, res) => {
   const { walletAddress } = req.query;
   const { usertype } = req.data;
+//   console.log("In get user d from wallet address", usertype);
+//   console.log(usertype === "Super Admin")
   if (usertype === "Super Admin") {
     return res.status(401).json({
       message: "Unauthorized Access!",
@@ -173,6 +175,28 @@ const getUserDetailsFromWalletAddress = async (req, res) => {
 const getUserDetailsFromUserId = async (req, res) => {
   const { userid } = req.query;
 
+
+    try {
+      const user = await UserModel.findOne({ _id: userid });
+      // console.log(user)
+      if (user) {
+        if (user.usertype === "Customer") {
+          return res.status(200).json({
+            message: "Successfully Fetched!",
+            name: user.name,
+            username: user.username,
+            usertype: user.usertype,
+            propic: user.propic,
+            status: 200,
+          });
+        } else {
+          console.log("I am a admin");
+          const admin = await AdminDetailsModel.findOne({
+            userid: user._id,
+          }).populate("userid");
+          console.log("admin", admin);
+
+
   try {
     const user = await UserModel.findOne({ _id: userid });
     // console.log(user)
@@ -211,11 +235,13 @@ const getUserDetailsFromUserId = async (req, res) => {
         status: 400,
       });
     }
+
   } catch (err) {
     return res.status(400).json({
       message: err,
     });
   }
+
 };
 
 module.exports = {
