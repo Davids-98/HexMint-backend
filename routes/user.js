@@ -14,10 +14,10 @@ router.get(
   userController.getUserDetailsFromUserId
 );
 
-router.get(
-  "/user-type",
-  authController.authenticate,
-  userController.getUserType
-);
+// router.get(
+//   "/user-type",
+//   authController.authenticate,
+//   userController.getUserType
+// );
 
 module.exports = router;

@@ -89,31 +89,31 @@ const UserModel = require("../models/UserModel");
 const AdminDetailsModel = require("../models/AdminDetailsModel");
 
 //Get the user's user type by user's wallet address
-const getUserType = async (req, res) => {
-  // console.log("get user type calling");
-  const { walletAddress } = req.query;
+// const getUserType = async (req, res) => {
+//   // console.log("get user type calling");
+//   const { walletAddress } = req.query;
 
-  try {
-    const user = await UserModel.findOne({ walletaddress: walletAddress });
-    console.log(user);
-    if (user) {
-      return res.status(200).json({
-        message: "Successfully Fetched!",
-        usertype: user.usertype,
-        status: 200,
-      });
-    } else {
-      return res.status(400).json({
-        message: "Error Occured!",
-        status: 400,
-      });
-    }
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error Occured!",
-    });
-  }
-};
+//   try {
+//     const user = await UserModel.findOne({ walletaddress: walletAddress });
+//     console.log(user);
+//     if (user) {
+//       return res.status(200).json({
+//         message: "Successfully Fetched!",
+//         usertype: user.usertype,
+//         status: 200,
+//       });
+//     } else {
+//       return res.status(400).json({
+//         message: "Error Occured!",
+//         status: 400,
+//       });
+//     }
+//   } catch (err) {
+//     return res.status(500).json({
+//       message: "Error Occured!",
+//     });
+//   }
+// };
 
 const getUserDetailsFromWalletAddress = async (req, res) => {
   const { walletAddress } = req.query;
@@ -228,5 +228,4 @@ const getUserDetailsFromUserId = async (req, res) => {
 module.exports = {
   getUserDetailsFromWalletAddress,
   getUserDetailsFromUserId,
-  getUserType,
 };
