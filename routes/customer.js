@@ -62,5 +62,4 @@ router
     customerController.handleDeleteReport
   );
 
-
 module.exports = router;

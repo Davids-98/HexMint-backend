@@ -169,6 +169,11 @@ const getAllBlockedUsers = async (req, res) => {
           return blockuser.userid.equals(user._id);
         });
       });
+      return res.status(200).json({
+        message: "success",
+        data: out,
+        status: 200,
+      });
     } catch (error) {
       return res.status(400).json({
         status: "error",
