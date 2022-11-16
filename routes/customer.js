@@ -22,6 +22,11 @@ router
     customerController.createCollection
   )
   .post(
+    "/create-collection-owner",
+    authController.authenticate,
+    customerController.createCollectionOwner
+  )
+  .post(
     "/save-user-activity",
     authController.authenticate,
     customerController.saveUserActivity

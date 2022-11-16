@@ -131,8 +131,10 @@ const getUserDetailsFromWalletAddress = async (req, res) => {
       // console.log(user)
       if (user) {
         if (user.usertype === "Customer") {
+          console.log("user: ",user);
           return res.status(200).json({
             message: "Successfully Fetched!",
+            userid: user._id,
             name: user.name,
             username: user.username,
             usertype: user.usertype,

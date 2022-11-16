@@ -12,6 +12,7 @@ const AuctionlistingModel = require("../HexMint-backend/models/AuctionListingMod
 
 const BidModel = require("../HexMint-backend/models/BidModel");
 const CollectionModel = require("../HexMint-backend/models/CollectionModel");
+const CollectionOwner = require("../HexMint-backend/models/CollectionOwnerModel");
 const ListingsModel = require("../HexMint-backend/models/ListingsModel");
 const NFTModel = require("../HexMint-backend/models/NFTModel");
 const ReportModel = require("../HexMint-backend/models/ReportModel");
