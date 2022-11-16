@@ -17,6 +17,7 @@ var Report = new Schema({
   },
   status: {
     type: Boolean,
+    default: false,
     required: true
   },
 

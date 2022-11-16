@@ -402,7 +402,7 @@ const saveUserActivity = async (req, res) => {
             console.log("Inside minted");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
-              price: Price,
+              price: Price/10**18,
               fromwalletaddress: "0x0000...",
               towalletaddress: req.body.transaction.from,
               time: req.body.transactionTime,
@@ -422,7 +422,7 @@ const saveUserActivity = async (req, res) => {
             console.log("Inside transferred");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
-              price: Price,
+              price: Price/10**18,
               fromwalletaddress: "0x0000...",
               towalletaddress: req.body.tokenID.seller,
               time: req.body.transactionTime,
@@ -443,7 +443,7 @@ const saveUserActivity = async (req, res) => {
             console.log("Inside bought");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
-              price: Price,
+              price: Price/10**18,
               fromwalletaddress: req.body.tokenID.seller,
               towalletaddress: "0x0000...",
               time: req.body.transactionTime,
@@ -463,7 +463,7 @@ const saveUserActivity = async (req, res) => {
             console.log("Inside listed");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
-              price: Price,
+              price: Price/10**18,
               fromwalletaddress: "0x0000...",
               towalletaddress: "-",
               time: req.body.transactionTime,
@@ -628,6 +628,98 @@ const handleDeleteReport = async (req, res) => {
   }
 };
 
+const getCustomerDetailsFromWalletAddress = async (req, res) => {
+  const { usertype } = req.data;
+  const { walletaddress } = req.params;
+  if (usertype === "Customer" || usertype === "Admin" || usertype === "Super Admin") {
+    try {
+
+      console.log("walletaddress from params", walletaddress);
+      const user = await UserModel.findOne({ walletaddress: walletaddress });
+      if (user) {
+        if (user.usertype === "Customer") {
+          return res.status(200).json({
+            message: "success",
+            name: user.name,
+            username: user.username,
+            propic: user.propic,
+            walletaddress: user.walletaddress,
+            status : 200,
+          });
+        } else {
+          return res.status(400).json({
+            message: "Error Occured!",
+            status : 400,
+          });
+        }
+      } else {
+        return res.status(400).json({
+          message: "Error Occured!",
+          status : 400,
+        });
+      }
+    } catch (error) {
+      return res.status(400).json({
+        message: "Error Occured!",
+        status : 400,
+      });
+    }
+    
+  } else {
+    return res.status(401).json({
+      message: "You are not authorized to perform this action",
+      status: 401,
+    });
+  }
+};
+
+const handleReportSeller = async (req, res) => {
+  const { usertype } = req.data;
+  console.log("in report seller", usertype);
+  if (usertype !== "Customer") {
+    return res.status(401).json({
+      message: "You are not authorized to perform this action",
+      status: 401,
+    });
+  }else{
+    try {
+      const { sellerWalletAddress, reason, ViewerAddress } = req.body;
+      
+      const seller = await UserModel.findOne({
+        walletaddress: sellerWalletAddress,
+      });
+      const sellerUID = seller._id;
+
+      const viewer = await UserModel.findOne({
+        walletaddress: ViewerAddress,
+      });
+      const viewerUID = viewer._id;
+
+      if (sellerUID && viewerUID) {
+        const report = await ReportModel.create({
+          fromuserid: viewerUID,
+          touserid: sellerUID,
+          reason: reason,
+        });
+        return res.status(200).json({
+          message: "Successfully Reported!",
+          status: 200,
+        });
+      }else{
+        return res.status(400).json({
+          message: "Error Occured!",
+          status : 400,
+        });
+      }
+    } catch (error) {
+      return res.status(400).json({
+        message: "Error Occured!",
+        status : 400,
+      });
+    }    
+  }
+}
+
 module.exports = {
   updateUserDetails,
   getAllUsers,
@@ -642,4 +734,6 @@ module.exports = {
   getCollectionName,
   getReports,
   handleDeleteReport,
+  getCustomerDetailsFromWalletAddress,
+  handleReportSeller
 };
