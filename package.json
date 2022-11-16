@@ -4,13 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "test": "jest",
-    "test_force_exit": "jest --forceExit",
-    "test_detectOpenHandles": "jest --detectOpenHandles",
-    "test_mocha": "mocha --recursive --exit"
+    "dev": "nodemon server"
   },
   "keywords": [],
   "author": "",
