@@ -4,6 +4,7 @@ const ActivityDetailsModel = require("../models/ActivityDetailsModel");
 const ActivityModel = require("../models/ActivityModel");
 
 const CollectionModel = require("../models/CollectionModel");
+const CollectionOwnerModel = require("../models/CollectionOwnerModel");
 const ReportModel = require("../models/ReportModel");
 const UserModel = require("../models/UserModel");
 const UserStatusModel = require("../models/UserStatusModel");
@@ -51,9 +52,6 @@ const updateUserDetails = async (req, res) => {
 };
 
 const createCollection = async (req, res) => {
-  // console.log("hello");
-  // console.log("handle create collection calling, ", req.body);
-
   const { usertype } = req.data;
 
   const {
@@ -106,6 +104,76 @@ const createCollection = async (req, res) => {
       } else {
         return res.status(400).json({
           message: "user not existing",
+        });
+      }
+    } catch (err) {
+      return res.status(400).json({
+        message: err,
+      });
+    }
+  }
+};
+
+const createCollectionOwner = async (req, res) => {
+  const { usertype } = req.data;
+
+  const {
+    userid,
+    collectionId,
+  } = req.body;
+
+  if (usertype !== "Customer") {
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
+  } else {
+    try {
+      const user = await UserModel.findOne({ walletaddress: userid });
+      const collection = await CollectionModel.findOne({ _id: collectionId });
+      // console.log("user",user," ",user._id);
+      if (user && collection) {
+        try {
+          const collectionOwner = await CollectionOwnerModel.findOne({
+            userid: userid,
+            collectionId: collectionId,
+          });
+
+          if (collectionOwner) {
+            return res.status(200).json({
+              message: "Collection owner Already exists with this user id in this collection!",
+              collectionId: collectionOwner.collectionId,
+              view: collectionOwner,
+            });
+          } else {
+            const newCollectionOwner = await CollectionOwnerModel.create({
+              userid: userid,
+              collectionId: collectionId,
+            });
+            const user = await CollectionModel.findOneAndUpdate(
+              { _id: collectionId },
+              {
+                userid: userid,
+                collectionName: collection.collectionName,
+                collectionDescription:collection.collectionDescription,
+                logoImg: collection.logoImg,
+                ownersCount:collection.ownersCount+1,
+              },
+              { new: true }
+            );
+
+            return res.status(202).json({
+              message: "Successfully Added!",
+              name: newCollectionOwner.userid,
+            });
+          }
+        } catch (err) {
+          return res.status(500).json({
+            message: err,
+          });
+        }
+      } else {
+        return res.status(400).json({
+          message: "user or collection not existing",
         });
       }
     } catch (err) {
@@ -564,6 +632,7 @@ module.exports = {
   updateUserDetails,
   getAllUsers,
   createCollection,
+  createCollectionOwner,
   getAllCollections,
   saveUserActivity,
   getUserActivityDetails,
