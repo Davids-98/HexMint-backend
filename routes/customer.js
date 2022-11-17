@@ -53,7 +53,7 @@ router
   )
   .post(
     "/get-collection-name",
-    authController.authenticate,
+
     customerController.getCollectionName
   )
   .get(

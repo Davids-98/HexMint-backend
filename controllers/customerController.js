@@ -7,7 +7,7 @@ const CollectionModel = require("../models/CollectionModel");
 const CollectionOwnerModel = require("../models/CollectionOwnerModel");
 const ReportModel = require("../models/ReportModel");
 const UserModel = require("../models/UserModel");
-const UserStatusModel = require("../models/UserStatusModel");
+
 
 //update user details
 const updateUserDetails = async (req, res) => {
@@ -190,21 +190,14 @@ const getAllUsers = async (req, res) => {
   console.log("In get all users...............", usertype);
   console.log(usertype === "Super Admin" || usertype === "Admin");
   if (usertype === "Admin" || usertype === "Super Admin") {
-    out = [];
-    try {
-      const users = await UserModel.find({ usertype: "Customer" });
-      const blockusers = await UserStatusModel.find({ isblocked: true });
 
-      const out = users.filter((user) => {
-        return !blockusers.some((blockuser) => {
-          return blockuser.userid.equals(user._id);
-        });
-      });
+    try {
+      const users = await UserModel.find({ usertype: "Customer", isblocked: false });
 
       // console.log(users);
       return res.status(200).json({
         status: "success",
-        data: out,
+        data: users,
       });
     } catch (error) {
       return res.status(400).json({
@@ -227,19 +220,12 @@ const getAllBlockedUsers = async (req, res) => {
       message: "Unauthorized",
     });
   } else {
-    out = [];
     try {
-      const users = await UserModel.find({ usertype: "Customer" });
-      const blockusers = await UserStatusModel.find({ isblocked: true });
+      const users = await UserModel.find({ usertype: "Customer", isblocked: true });
 
-      const out = users.filter((user) => {
-        return blockusers.some((blockuser) => {
-          return blockuser.userid.equals(user._id);
-        });
-      });
       return res.status(200).json({
         message: "success",
-        data: out,
+        data: users,
         status: 200,
       });
     } catch (error) {
@@ -269,13 +255,9 @@ const getAllCollections = async (req, res) => {
 };
 
 const getCollectionName = async (req, res) => {
-  const { usertype } = req.data;
 
-  if (usertype !== "Customer") {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
-  } else {
+
+
     const { collectionID } = req.body;
     console.log("collectionID", collectionID);
     try {
@@ -299,7 +281,7 @@ const getCollectionName = async (req, res) => {
         message: err,
       });
     }
-  }
+  
 };
 
 const getUserActivityDetails = async (req, res) => {
@@ -518,10 +500,13 @@ const handleBlockUser = async (req, res) => {
   } else {
     try {
       const { id } = req.params;
-      const blockuser = await UserStatusModel.create({
-        userid: id,
-        isblocked: true,
-      });
+      const blockuser = await UserModel.findOneAndUpdate(
+        { userid : id},
+        {
+          isblocked: true,
+        },
+      { new: true }
+      )
 
       return res.status(200).json({
         data: blockuser,
@@ -545,9 +530,11 @@ const handleUnblockUser = async (req, res) => {
   } else {
     try {
       const { id } = req.params;
-      const blockuser = await UserStatusModel.findOneAndDelete({
-        userid: id,
-      });
+      const blockuser = await UserModel.findOneAndUpdate(
+        {userid: id},
+
+        {isblocked: false},
+        { new: true });
 
       return res.status(200).json({
         data: blockuser,
@@ -604,7 +591,7 @@ const getReports = async (req, res) => {
 };
 
 const handleDeleteReport = async (req, res) => {
-  const usertype = req.data;
+  const {usertype} = req.data;
 
   if (usertype !== "Admin") {
     return res.status(401).json({
@@ -614,7 +601,7 @@ const handleDeleteReport = async (req, res) => {
   } else {
     try {
       const { id } = req.params;
-      const report = await ReportModel.findOneAndDelete({ _id: id });
+      const report = await ReportModel.deleteMany({ _id: id });
 
       return res.status(200).json({
         data: report,
@@ -677,40 +664,61 @@ const handleReportSeller = async (req, res) => {
   const { usertype } = req.data;
   console.log("in report seller", usertype);
   if (usertype !== "Customer") {
+    console.log("not customer.........", usertype);
     return res.status(401).json({
-      message: "You are not authorized to perform this action",
-      status: 401,
+        message: "You are not authorized to perform this action",
+        status: 401,
     });
   }else{
     try {
       const { sellerWalletAddress, reason, ViewerAddress } = req.body;
-      
+      console.log("in try", sellerWalletAddress, reason, ViewerAddress);
       const seller = await UserModel.findOne({
         walletaddress: sellerWalletAddress,
       });
       const sellerUID = seller._id;
+      console.log("sellerUID is......", sellerUID);
 
       const viewer = await UserModel.findOne({
         walletaddress: ViewerAddress,
       });
       const viewerUID = viewer._id;
+      console.log("viewerUID is......", viewerUID);
 
-      if (sellerUID && viewerUID) {
-        const report = await ReportModel.create({
-          fromuserid: viewerUID,
-          touserid: sellerUID,
-          reason: reason,
-        });
-        return res.status(200).json({
-          message: "Successfully Reported!",
-          status: 200,
-        });
-      }else{
+      const reportedBefore = await ReportModel.findOne({
+        touserid: sellerUID,
+        fromuserid: viewerUID,
+      });
+      console.log("reportedBefore is......", reportedBefore);
+      if (reportedBefore || seller.isblocked) {
         return res.status(400).json({
-          message: "Error Occured!",
-          status : 400,
+          message: "You have already reported this seller",
+          status: 400,
         });
-      }
+       } else{
+        console.log("in else,,,,,,,,,,,");
+
+  
+        if (sellerUID && viewerUID) {
+          const report = await ReportModel.create({
+            fromuserid: viewerUID,
+            touserid: sellerUID,
+            reason: reason,
+          });
+
+          return res.status(200).json({
+            message: "Successfully Reported!",
+            status: 200,
+          });
+        }else{
+          return res.status(400).json({
+            message: "Error Occured!",
+            status : 400,
+          });
+        }
+        }
+
+
     } catch (error) {
       return res.status(400).json({
         message: "Error Occured!",
