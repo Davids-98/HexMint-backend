@@ -65,6 +65,16 @@ router
     "/delete-report/:id",
     authController.authenticate,
     customerController.handleDeleteReport
-  );
+  )
+  .get(
+    "/get-customer-details-from-wallet-address/:walletaddress",
+    authController.authenticate,
+    customerController.getCustomerDetailsFromWalletAddress
+  )
+  .post(
+    "/report-seller",
+    authController.authenticate,
+    customerController.handleReportSeller
+  )
 
 module.exports = router;
