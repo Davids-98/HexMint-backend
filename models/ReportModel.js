@@ -15,11 +15,6 @@ var Report = new Schema({
     type: String,
     required: true
   },
-  status: {
-    type: Boolean,
-    default: false,
-    required: true
-  },
 
 },{timestamps : true});
 
