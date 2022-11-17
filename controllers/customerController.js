@@ -8,7 +8,6 @@ const CollectionOwnerModel = require("../models/CollectionOwnerModel");
 const ReportModel = require("../models/ReportModel");
 const UserModel = require("../models/UserModel");
 
-
 //update user details
 const updateUserDetails = async (req, res) => {
   const { walletaddress, name, username, propic } = req.body;
@@ -117,10 +116,7 @@ const createCollection = async (req, res) => {
 const createCollectionOwner = async (req, res) => {
   const { usertype } = req.data;
 
-  const {
-    userid,
-    collectionId,
-  } = req.body;
+  const { userid, collectionId } = req.body;
 
   if (usertype !== "Customer") {
     return res.status(401).json({
@@ -140,7 +136,8 @@ const createCollectionOwner = async (req, res) => {
 
           if (collectionOwner) {
             return res.status(200).json({
-              message: "Collection owner Already exists with this user id in this collection!",
+              message:
+                "Collection owner Already exists with this user id in this collection!",
               collectionId: collectionOwner.collectionId,
               view: collectionOwner,
             });
@@ -154,9 +151,9 @@ const createCollectionOwner = async (req, res) => {
               {
                 userid: userid,
                 collectionName: collection.collectionName,
-                collectionDescription:collection.collectionDescription,
+                collectionDescription: collection.collectionDescription,
                 logoImg: collection.logoImg,
-                ownersCount:collection.ownersCount+1,
+                ownersCount: collection.ownersCount + 1,
               },
               { new: true }
             );
@@ -190,9 +187,11 @@ const getAllUsers = async (req, res) => {
   console.log("In get all users...............", usertype);
   console.log(usertype === "Super Admin" || usertype === "Admin");
   if (usertype === "Admin" || usertype === "Super Admin") {
-
     try {
-      const users = await UserModel.find({ usertype: "Customer", isblocked: false });
+      const users = await UserModel.find({
+        usertype: "Customer",
+        isblocked: false,
+      });
 
       // console.log(users);
       return res.status(200).json({
@@ -221,7 +220,10 @@ const getAllBlockedUsers = async (req, res) => {
     });
   } else {
     try {
-      const users = await UserModel.find({ usertype: "Customer", isblocked: true });
+      const users = await UserModel.find({
+        usertype: "Customer",
+        isblocked: true,
+      });
 
       return res.status(200).json({
         message: "success",
@@ -255,33 +257,29 @@ const getAllCollections = async (req, res) => {
 };
 
 const getCollectionName = async (req, res) => {
-
-
-
-    const { collectionID } = req.body;
-    console.log("collectionID", collectionID);
-    try {
-      const collection = await CollectionModel.findOne({
-        _id: collectionID,
+  const { collectionID } = req.body;
+  console.log("collectionID", collectionID);
+  try {
+    const collection = await CollectionModel.findOne({
+      _id: collectionID,
+    });
+    console.log("collection", collection);
+    if (collection) {
+      collectionName = collection.collectionName;
+      return res.status(200).json({
+        message: "success",
+        collectionName: collectionName,
       });
-      console.log("collection", collection);
-      if (collection) {
-        collectionName = collection.collectionName;
-        return res.status(200).json({
-          message: "success",
-          collectionName: collectionName,
-        });
-      } else {
-        return res.status(400).json({
-          message: "error",
-        });
-      }
-    } catch (err) {
+    } else {
       return res.status(400).json({
-        message: err,
+        message: "error",
       });
     }
-  
+  } catch (err) {
+    return res.status(400).json({
+      message: err,
+    });
+  }
 };
 
 const getUserActivityDetails = async (req, res) => {
@@ -384,7 +382,7 @@ const saveUserActivity = async (req, res) => {
             console.log("Inside minted");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
-              price: Price/10**18,
+              price: Price / 10 ** 18,
               fromwalletaddress: "0x0000...",
               towalletaddress: req.body.transaction.from,
               time: req.body.transactionTime,
@@ -404,7 +402,7 @@ const saveUserActivity = async (req, res) => {
             console.log("Inside transferred");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
-              price: Price/10**18,
+              price: Price / 10 ** 18,
               fromwalletaddress: "0x0000...",
               towalletaddress: req.body.tokenID.seller,
               time: req.body.transactionTime,
@@ -425,7 +423,7 @@ const saveUserActivity = async (req, res) => {
             console.log("Inside bought");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
-              price: Price/10**18,
+              price: Price / 10 ** 18,
               fromwalletaddress: req.body.tokenID.seller,
               towalletaddress: "0x0000...",
               time: req.body.transactionTime,
@@ -445,7 +443,7 @@ const saveUserActivity = async (req, res) => {
             console.log("Inside listed");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
-              price: Price/10**18,
+              price: Price / 10 ** 18,
               fromwalletaddress: "0x0000...",
               towalletaddress: "-",
               time: req.body.transactionTime,
@@ -491,6 +489,7 @@ const saveUserActivity = async (req, res) => {
 };
 
 const handleBlockUser = async (req, res) => {
+  console.log("in handle block user");
   const { usertype } = req.data;
   if (usertype !== "Admin") {
     return res.status(401).json({
@@ -501,12 +500,11 @@ const handleBlockUser = async (req, res) => {
     try {
       const { id } = req.params;
       const blockuser = await UserModel.findOneAndUpdate(
-        { userid : id},
-        {
-          isblocked: true,
-        },
-      { new: true }
-      )
+        { _id: id },
+        { isblocked: true },
+        { new: true }
+      );
+      console.log(blockuser);
 
       return res.status(200).json({
         data: blockuser,
@@ -531,10 +529,11 @@ const handleUnblockUser = async (req, res) => {
     try {
       const { id } = req.params;
       const blockuser = await UserModel.findOneAndUpdate(
-        {userid: id},
+        { _id: id },
 
-        {isblocked: false},
-        { new: true });
+        { isblocked: false },
+        { new: true }
+      );
 
       return res.status(200).json({
         data: blockuser,
@@ -591,7 +590,7 @@ const getReports = async (req, res) => {
 };
 
 const handleDeleteReport = async (req, res) => {
-  const {usertype} = req.data;
+  const { usertype } = req.data;
 
   if (usertype !== "Admin") {
     return res.status(401).json({
@@ -601,7 +600,7 @@ const handleDeleteReport = async (req, res) => {
   } else {
     try {
       const { id } = req.params;
-      const report = await ReportModel.deleteMany({ _id: id });
+      const report = await ReportModel.deleteMany({ touserid: id });
 
       return res.status(200).json({
         data: report,
@@ -618,9 +617,12 @@ const handleDeleteReport = async (req, res) => {
 const getCustomerDetailsFromWalletAddress = async (req, res) => {
   const { usertype } = req.data;
   const { walletaddress } = req.params;
-  if (usertype === "Customer" || usertype === "Admin" || usertype === "Super Admin") {
+  if (
+    usertype === "Customer" ||
+    usertype === "Admin" ||
+    usertype === "Super Admin"
+  ) {
     try {
-
       console.log("walletaddress from params", walletaddress);
       const user = await UserModel.findOne({ walletaddress: walletaddress });
       if (user) {
@@ -631,27 +633,26 @@ const getCustomerDetailsFromWalletAddress = async (req, res) => {
             username: user.username,
             propic: user.propic,
             walletaddress: user.walletaddress,
-            status : 200,
+            status: 200,
           });
         } else {
           return res.status(400).json({
             message: "Error Occured!",
-            status : 400,
+            status: 400,
           });
         }
       } else {
         return res.status(400).json({
           message: "Error Occured!",
-          status : 400,
+          status: 400,
         });
       }
     } catch (error) {
       return res.status(400).json({
         message: "Error Occured!",
-        status : 400,
+        status: 400,
       });
     }
-    
   } else {
     return res.status(401).json({
       message: "You are not authorized to perform this action",
@@ -666,10 +667,10 @@ const handleReportSeller = async (req, res) => {
   if (usertype !== "Customer") {
     console.log("not customer.........", usertype);
     return res.status(401).json({
-        message: "You are not authorized to perform this action",
-        status: 401,
+      message: "You are not authorized to perform this action",
+      status: 401,
     });
-  }else{
+  } else {
     try {
       const { sellerWalletAddress, reason, ViewerAddress } = req.body;
       console.log("in try", sellerWalletAddress, reason, ViewerAddress);
@@ -695,10 +696,9 @@ const handleReportSeller = async (req, res) => {
           message: "You have already reported this seller",
           status: 400,
         });
-       } else{
+      } else {
         console.log("in else,,,,,,,,,,,");
 
-  
         if (sellerUID && viewerUID) {
           const report = await ReportModel.create({
             fromuserid: viewerUID,
@@ -710,23 +710,21 @@ const handleReportSeller = async (req, res) => {
             message: "Successfully Reported!",
             status: 200,
           });
-        }else{
+        } else {
           return res.status(400).json({
             message: "Error Occured!",
-            status : 400,
+            status: 400,
           });
         }
-        }
-
-
+      }
     } catch (error) {
       return res.status(400).json({
         message: "Error Occured!",
-        status : 400,
+        status: 400,
       });
-    }    
+    }
   }
-}
+};
 
 module.exports = {
   updateUserDetails,
@@ -743,5 +741,5 @@ module.exports = {
   getReports,
   handleDeleteReport,
   getCustomerDetailsFromWalletAddress,
-  handleReportSeller
+  handleReportSeller,
 };
