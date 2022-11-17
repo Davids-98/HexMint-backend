@@ -1,22 +1,29 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var AdminUpdatingDetail = new Schema({
-  requestid: {
+  userid: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'AdminEditRequest'
+    ref: 'User'
   },
-  name: {
-    type: String,
-    required: true
-  },
+  // name: {
+  //   type: String,
+  //   required: true
+  // },
   email: {
     type: String,
     required: true
   },
-  DOB: {
-    type: Date,
-    required: true
+  // DOB: {
+  //   type: Date,
+  //   required: true
+  // },
+  propic: {
+    type : String
+    // type: {
+    //   data: Buffer,
+    //   contentType: String
+    // }
   },
   mobilenumber: {
     type: Number,
