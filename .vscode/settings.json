@@ -18,5 +18,9 @@
     "titleBar.inactiveBackground": "#dd053199",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "peacock.color": "#dd0531"
+
+  "peacock.color": "#42b883",
+  "appService.defaultWebAppToDeploy": "/subscriptions/f15078f1-1e8a-440f-86eb-e5184d23c07a/AppServices/subscriptions/f15078f1-1e8a-440f-86eb-e5184d23c07a/resourceGroups/HeXmint-NFT-Marketplace/providers/Microsoft.Web/sites/HeXmint-Marketplace",
+  "appService.deploySubpath": "."
+
 }

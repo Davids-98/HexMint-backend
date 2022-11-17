@@ -18,14 +18,10 @@ const NFTModel = require("../HexMint-backend/models/NFTModel");
 const ReportModel = require("../HexMint-backend/models/ReportModel");
 const AdminDetailsModel = require("../HexMint-backend/models/AdminDetailsModel");
 
-
-
 const express = require("express");
 
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
-
-
 
 //midleware
 
@@ -48,11 +44,10 @@ const mongoose = require("mongoose");
 
 const app = require("./app");
 
-
 //express app
 const db = require("./db_connections");
 //Connecting to database
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 1377;
 
 // app.use((req, res, next) => {
 //     console.log(req.path, req.method)
