@@ -87,6 +87,7 @@
 
 const UserModel = require("../models/UserModel");
 const AdminDetailsModel = require("../models/AdminDetailsModel");
+const AuctionListingModel = require("../models/AuctionListingModel");
 
 //Get the user's user type by user's wallet address
 // const getUserType = async (req, res) => {
@@ -131,7 +132,7 @@ const getUserDetailsFromWalletAddress = async (req, res) => {
       // console.log(user)
       if (user) {
         if (user.usertype === "Customer") {
-          console.log("user: ",user);
+          console.log("user: ", user);
           return res.status(200).json({
             message: "Successfully Fetched!",
             userid: user._id,
@@ -222,7 +223,70 @@ const getUserDetailsFromUserId = async (req, res) => {
   }
 };
 
+const getTimeAuctionDetails = async (req, res) => {
+  const { tokenId } = req.query;
+  // console.log("tokenId: ", tokenId);
+  try {
+    const auctionListing = await AuctionListingModel.find({
+      tokenId: tokenId,
+    });
+
+    if (auctionListing) {
+      // console.log("auctionListing: ", auctionListing);
+      let highestBid = 0;
+      let initialBid = Number.MAX_SAFE_INTEGER;
+      let item = "";
+      let timeDiff_ = 0;
+      // let endDate = new Date();
+      auctionListing.map((item_) => {
+        const timeNow = new Date();
+        const endTime = new Date(item_.endDate);
+        const timeDiff = endTime.getTime() - timeNow.getTime();
+        // console.log("timediff: ", timeDiff);
+        if (timeDiff > 0) {
+          // console.log(item_.currentbid,highestBid,item_.currentbid > highestBid);
+          if (item_.currentbid > highestBid) {
+            if (item_.currentbid < initialBid) {
+              initialBid = item_.currentbid;
+            }
+            highestBid = item_.currentbid;
+            // console.log("highestBid", highestBid);
+            item = item_;
+            timeDiff_ = timeDiff;
+            // console.log("item::::", item);
+          }
+        }
+      });
+      if (item !== "") {
+        // console.log("item !==: ", item);
+        return res.status(200).json({
+          message: "Time auction found!",
+          status: 200,
+          item: item,
+          timeDiff: timeDiff_,
+          initialBid: initialBid,
+        });
+      } else {
+        return res.status(202).json({
+          message: "Time auction not found!",
+          status: 202,
+        });
+      }
+    } else {
+      return res.status(202).json({
+        message: "Time auction not found!",
+        status: 202,
+      });
+    }
+  } catch (err) {
+    return res.status(400).json({
+      message: err,
+    });
+  }
+};
+
 module.exports = {
   getUserDetailsFromWalletAddress,
   getUserDetailsFromUserId,
+  getTimeAuctionDetails,
 };
