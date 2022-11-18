@@ -8,6 +8,8 @@ const CollectionOwnerModel = require("../models/CollectionOwnerModel");
 const ReportModel = require("../models/ReportModel");
 const UserModel = require("../models/UserModel");
 
+
+
 //update user details
 const updateUserDetails = async (req, res) => {
   const { walletaddress, name, username, propic } = req.body;
@@ -770,6 +772,65 @@ const handleReportSeller = async (req, res) => {
   }
 };
 
+const mintNFT = async (req, res) => {
+  try {
+    const { ethers } = require("hardhat");
+    const Marketplace = require("../Marketplace.json")
+    const {metadataURL} = req.body;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    //Pull the deployed contract instance
+    let contract = new ethers.Contract(
+      Marketplace.address,
+      Marketplace.abi,
+      signer
+    );
+    let info = "";
+    contract.on(
+      "TokenStatusUpdatedSuccess",
+      (tokenId, contractAddress, seller, price, currentlyListed, event) => {
+        info = {
+          tokenId: tokenId,
+          contractAddress: contractAddress,
+          seller: seller,
+          price: price,
+          currentlyListed: currentlyListed,
+          data: event,
+        };
+      }
+    );
+    //retrieve from front metadataURL
+    const transaction = await contract.createToken(metadataURL.toString());
+    await transaction.wait();
+    const transactionTime = new Date();
+    const response = saveUserActivity(
+      "minted",
+      transaction,
+      info.tokenId,
+      new Date()
+    );
+    if (response.status === 200) {
+      return res.status(200).json({
+        message: "Successfully Reported!",
+        status: 200,
+        info: info,
+
+      });
+    } else {
+      return res.status(400).json({
+        message: "Error Occured in save user activity!",
+        status: 400,
+      });
+    }
+  } catch {
+    return res.status(401).json({
+      message: "Error Occured in transaction!",
+      status: 401,
+    });
+  }
+};
+
 module.exports = {
   updateUserDetails,
   getAllUsers,
@@ -786,4 +847,5 @@ module.exports = {
   handleDeleteReport,
   getCustomerDetailsFromWalletAddress,
   handleReportSeller,
+  mintNFT,
 };

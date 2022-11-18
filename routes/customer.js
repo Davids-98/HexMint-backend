@@ -76,5 +76,10 @@ router
     authController.authenticate,
     customerController.handleReportSeller
   )
+  .post(
+    "/mint-nft",
+    authController.authenticate,
+    customerController.mintNFT
+  )
 
 module.exports = router;
