@@ -2,7 +2,7 @@ const AdminDetailsModel = require("../models/AdminDetailsModel");
 
 const ActivityDetailsModel = require("../models/ActivityDetailsModel");
 const ActivityModel = require("../models/ActivityModel");
-
+const AuctionListingModel = require("../models/AuctionListingModel");
 const CollectionModel = require("../models/CollectionModel");
 const CollectionOwnerModel = require("../models/CollectionOwnerModel");
 const ReportModel = require("../models/ReportModel");
@@ -117,10 +117,7 @@ const createCollection = async (req, res) => {
 const createCollectionOwner = async (req, res) => {
   const { usertype } = req.data;
 
-  const {
-    userid,
-    collectionId,
-  } = req.body;
+  const { userid, collectionId } = req.body;
 
   if (usertype !== "Customer") {
     return res.status(401).json({
@@ -140,7 +137,8 @@ const createCollectionOwner = async (req, res) => {
 
           if (collectionOwner) {
             return res.status(200).json({
-              message: "Collection owner Already exists with this user id in this collection!",
+              message:
+                "Collection owner Already exists with this user id in this collection!",
               collectionId: collectionOwner.collectionId,
               view: collectionOwner,
             });
@@ -154,14 +152,14 @@ const createCollectionOwner = async (req, res) => {
               {
                 userid: userid,
                 collectionName: collection.collectionName,
-                collectionDescription:collection.collectionDescription,
+                collectionDescription: collection.collectionDescription,
                 logoImg: collection.logoImg,
-                ownersCount:collection.ownersCount+1,
+                ownersCount: collection.ownersCount + 1,
               },
               { new: true }
             );
 
-            return res.status(202).json({
+            return res.status(200).json({
               message: "Successfully Added!",
               name: newCollectionOwner.userid,
             });
@@ -367,6 +365,7 @@ const getUserActivityDetails = async (req, res) => {
     }
   }
 };
+
 const saveUserActivity = async (req, res) => {
   console.log("in save user activity");
   console.log(req.body);
@@ -460,7 +459,7 @@ const saveUserActivity = async (req, res) => {
               });
             }
           } else if (req.body.activityType === "listed") {
-            console.log("Inside listed");
+            // console.log("Inside listed");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
               price: Price,
@@ -469,6 +468,49 @@ const saveUserActivity = async (req, res) => {
               time: req.body.transactionTime,
               transactionhash: req.body.transaction.hash,
             });
+
+            // console.log("req.body.transaction.listingType: ",req.body.transaction.listingType);
+            // console.log(req.body.transaction.listingType === "2");
+            // console.log("req.body.transaction: ",req.body.transaction);
+
+            if (req.body.transaction.listingType === "2") {
+              console.log("inside if");
+              const newListing = await AuctionListingModel.create({
+                ownerId: userId,
+                bidderId: userId,
+                tokenId: req.body.tokenID.tokenId.toString(),
+                currentbid: req.body.transaction.currentbid,
+                endDate: req.body.transaction.endDate,
+              });
+              console.log("newListing: ", newListing);
+            }
+            if (newActivityDetails) {
+              return res.status(200).json({
+                message: "success",
+              });
+            } else {
+              return res.status(400).json({
+                message: "error",
+              });
+            }
+          } else if (req.body.activityType === "bade") {
+            const newActivityDetails = await ActivityDetailsModel.create({
+              activityId: newActivity._id,
+              price: Price,
+              fromwalletaddress: "0x0000...",
+              towalletaddress: "-",
+              time: req.body.transactionTime,
+              transactionhash: req.body.transaction.hash,
+            });
+
+            const newBidding = await AuctionListingModel.create({
+              ownerId: req.body.transaction.ownerId,
+              bidderId: userId,
+              tokenId: req.body.tokenID.tokenId.toString(),
+              currentbid: req.body.transaction.currentbid,
+              endDate: req.body.transaction.endDate,
+            });
+            console.log("newListing: ", newBidding);
 
             if (newActivityDetails) {
               return res.status(200).json({

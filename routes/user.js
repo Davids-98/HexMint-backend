@@ -10,9 +10,11 @@ router.get(
 );
 router.get(
   "/user-details-from-userid",
-
-
   userController.getUserDetailsFromUserId
+);
+router.get(
+  "/time-auction-details",
+  userController.getTimeAuctionDetails
 );
 
 // router.get(
