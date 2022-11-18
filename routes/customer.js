@@ -77,8 +77,8 @@ router
     customerController.handleReportSeller
   )
   .get(
-    "/get-blocked-users-walletaddress",
-    customerController.getBlockedUsersWalletAddress
-  )
+    "/get-blocked-users-status/:walletaddress",
+    customerController.getIsBlocked
+  );
 
 module.exports = router;

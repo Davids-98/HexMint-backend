@@ -770,24 +770,27 @@ const handleReportSeller = async (req, res) => {
   }
 };
 
-getBlockedUsersWalletAddress = async (req, res) => {
+getIsBlocked = async (req, res) => {
+  console.log("in get is blocked", req.params);
 
-  const {walletaddress} = req.body;
+  const { walletaddress } = req.params;
   console.log("walletaddress is blocked ...................", walletaddress);
-  try{
-    const blockedUser = await UserModel.findOne({walletaddress: walletaddress});
+  try {
+    const blockedUser = await UserModel.findOne({
+      walletaddress: walletaddress,
+    });
     const isblocked = blockedUser.isblocked;
     return res.status(200).json({
       message: "Successfully Fetched!",
       data: isblocked,
       status: 200,
     });
-  }catch(error){
+  } catch (error) {
     return res.status(500).json({
       message: "Error Occured!",
     });
   }
-}
+};
 
 module.exports = {
   updateUserDetails,
@@ -805,5 +808,5 @@ module.exports = {
   handleDeleteReport,
   getCustomerDetailsFromWalletAddress,
   handleReportSeller,
-  getBlockedUsersWalletAddress
+  getIsBlocked,
 };
