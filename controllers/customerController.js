@@ -456,11 +456,12 @@ const saveUserActivity = async (req, res) => {
             // console.log("req.body.transaction: ",req.body.transaction);
 
             if (req.body.transaction.listingType === "2") {
+              // console.log("Inside if listing type 2 and....", req.body);
               console.log("inside if");
               const newListing = await AuctionListingModel.create({
                 ownerId: userId,
                 bidderId: userId,
-                tokenId: req.body.tokenID.tokenId.toString(),
+                tokenId: parseInt(req.body.tokenID.tokenId.hex, 16).toString(),
                 currentbid: req.body.transaction.currentbid,
                 endDate: req.body.transaction.endDate,
               });
@@ -476,9 +477,10 @@ const saveUserActivity = async (req, res) => {
               });
             }
           } else if (req.body.activityType === "bade") {
+            console.log("Inside bade..........", req.body);
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
-              price: Price,
+              price: Price / 10 ** 18,
               fromwalletaddress: "0x0000...",
               towalletaddress: "-",
               time: req.body.transactionTime,
@@ -488,7 +490,7 @@ const saveUserActivity = async (req, res) => {
             const newBidding = await AuctionListingModel.create({
               ownerId: req.body.transaction.ownerId,
               bidderId: userId,
-              tokenId: req.body.tokenID.tokenId.toString(),
+              tokenId: parseInt(req.body.tokenID.tokenId.hex, 16).toString(),
               currentbid: req.body.transaction.currentbid,
               endDate: req.body.transaction.endDate,
             });

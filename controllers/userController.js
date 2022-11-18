@@ -189,6 +189,7 @@ const getUserDetailsFromUserId = async (req, res) => {
           username: user.username,
           usertype: user.usertype,
           propic: user.propic,
+          walletaddress: user.walletaddress,
           status: 200,
         });
       } else {
