@@ -8,8 +8,6 @@ const CollectionOwnerModel = require("../models/CollectionOwnerModel");
 const ReportModel = require("../models/ReportModel");
 const UserModel = require("../models/UserModel");
 
-
-
 //update user details
 const updateUserDetails = async (req, res) => {
   const { walletaddress, name, username, propic } = req.body;
@@ -353,9 +351,6 @@ const getUserActivityDetails = async (req, res) => {
 const saveUserActivity = async (req, res) => {
   console.log("in save user activity");
   console.log(req.body);
-
-  //Access authentincate data
-  const { usertype } = req.data;
 
   if (usertype === "Customer") {
     try {
@@ -775,8 +770,8 @@ const handleReportSeller = async (req, res) => {
 const mintNFT = async (req, res) => {
   try {
     const { ethers } = require("hardhat");
-    const Marketplace = require("../Marketplace.json")
-    const {metadataURL} = req.body;
+    const Marketplace = require("../Marketplace.json");
+    const { metadataURL } = req.body;
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
 
@@ -815,7 +810,6 @@ const mintNFT = async (req, res) => {
         message: "Successfully Reported!",
         status: 200,
         info: info,
-
       });
     } else {
       return res.status(400).json({

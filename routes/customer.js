@@ -26,11 +26,7 @@ router
     authController.authenticate,
     customerController.createCollectionOwner
   )
-  .post(
-    "/save-user-activity",
-    authController.authenticate,
-    customerController.saveUserActivity
-  )
+
   .get(
     "/get-user-activity-details/:walletAddress",
     authController.authenticate,
@@ -75,11 +71,6 @@ router
     "/report-seller",
     authController.authenticate,
     customerController.handleReportSeller
-  )
-  .post(
-    "/mint-nft",
-    authController.authenticate,
-    customerController.mintNFT
-  )
+  );
 
 module.exports = router;
