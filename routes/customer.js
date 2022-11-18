@@ -76,5 +76,9 @@ router
     authController.authenticate,
     customerController.handleReportSeller
   )
+  .get(
+    "/get-blocked-users-walletaddress",
+    customerController.getBlockedUsersWalletAddress
+  )
 
 module.exports = router;
