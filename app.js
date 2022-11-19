@@ -23,5 +23,6 @@ app.use("/auth", require("./routes/auth"));
 app.use("/user", require("./routes/user"));
 app.use("/customer", multer().array(), require("./routes/customer"));
 app.use("/admin", multer().array(), require("./routes/admin"));
+app.use("/dashboard", multer().array(), require("./routes/dashboard"));
 
 module.exports = app;

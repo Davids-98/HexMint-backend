@@ -11,6 +11,10 @@ var ActivityDetail = new Schema({
     type: Number,
     required: true
   },
+  profit: {
+    type: Number,
+    required: true
+  },
   fromwalletaddress: {
     type: String,
     required: true
