@@ -429,8 +429,9 @@ const saveUserActivity = async (req, res) => {
               activityId: newActivity._id,
               price: Price / 10 ** 18,
               profit:
-                (Price / 10 ** 16) *
-                parseInt(req.body.transaction.referralRate),
+                ((Price / 10 ** 18) *
+                  parseInt(req.body.transaction.referralRate)) /
+                (100 + parseInt(req.body.transaction.referralRate)),
               fromwalletaddress: req.body.tokenID.seller,
               towalletaddress: req.body.transaction.from,
               time: req.body.transactionTime,
@@ -464,7 +465,12 @@ const saveUserActivity = async (req, res) => {
 
             if (req.body.transaction.listingType === "2") {
               // console.log("Inside if listing type 2 and....", req.body);
-              console.log("inside if");
+              console.log("inside if............................");
+              console.log(
+                "#######################",
+                userId,
+                req.body.transaction
+              );
               const newListing = await AuctionListingModel.create({
                 ownerId: userId,
                 bidderId: userId,
@@ -473,7 +479,10 @@ const saveUserActivity = async (req, res) => {
                 referralRate: req.body.transaction.referralRate,
                 endDate: req.body.transaction.endDate,
               });
-              console.log("newListing: ", newListing);
+              console.log(
+                "newListing: ############################ ",
+                newListing
+              );
             }
             if (newActivityDetails) {
               return res.status(200).json({
@@ -490,8 +499,9 @@ const saveUserActivity = async (req, res) => {
               activityId: newActivity._id,
               price: Price / 10 ** 18,
               profit:
-                (Price / 10 ** 16) *
-                parseInt(req.body.transaction.referralRate),
+                ((Price / 10 ** 18) *
+                  parseInt(req.body.transaction.referralRate)) /
+                (100 + parseInt(req.body.transaction.referralRate)),
               fromwalletaddress: "0x0000...",
               towalletaddress: "-",
               time: req.body.transactionTime,
@@ -504,6 +514,7 @@ const saveUserActivity = async (req, res) => {
               tokenId: parseInt(req.body.tokenID.tokenId.hex, 16).toString(),
               currentbid: req.body.transaction.currentbid,
               endDate: req.body.transaction.endDate,
+              referralRate: req.body.transaction.referralRate,
             });
             console.log("newListing: ", newBidding);
 
