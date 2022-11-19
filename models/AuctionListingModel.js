@@ -20,6 +20,10 @@ var auctionlisting = new Schema(
       type: String,
       required: true,
     },
+    referralRate: {
+      type: Number,
+      required: true,
+    },
     endDate: {
       type: String,
       required: true,

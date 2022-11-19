@@ -384,6 +384,7 @@ const saveUserActivity = async (req, res) => {
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
               price: Price / 10 ** 18,
+              profit: 0,
               fromwalletaddress: "0x0000...",
               towalletaddress: req.body.transaction.from,
               time: req.body.transactionTime,
@@ -404,6 +405,7 @@ const saveUserActivity = async (req, res) => {
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
               price: Price / 10 ** 18,
+              profit: 0,
               fromwalletaddress: "0x0000...",
               towalletaddress: req.body.tokenID.seller,
               time: req.body.transactionTime,
@@ -422,11 +424,15 @@ const saveUserActivity = async (req, res) => {
             }
           } else if (req.body.activityType === "bought") {
             console.log("Inside bought");
+            console.log("req.body: ", req.body);
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
               price: Price / 10 ** 18,
+              profit:
+                (Price / 10 ** 16) *
+                parseInt(req.body.transaction.referralRate),
               fromwalletaddress: req.body.tokenID.seller,
-              towalletaddress: "0x0000...",
+              towalletaddress: req.body.transaction.from,
               time: req.body.transactionTime,
               transactionhash: req.body.transaction.hash,
             });
@@ -445,6 +451,7 @@ const saveUserActivity = async (req, res) => {
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
               price: Price / 10 ** 18,
+              profit: 0,
               fromwalletaddress: "0x0000...",
               towalletaddress: "-",
               time: req.body.transactionTime,
@@ -463,6 +470,7 @@ const saveUserActivity = async (req, res) => {
                 bidderId: userId,
                 tokenId: parseInt(req.body.tokenID.tokenId.hex, 16).toString(),
                 currentbid: req.body.transaction.currentbid,
+                referralRate: req.body.transaction.referralRate,
                 endDate: req.body.transaction.endDate,
               });
               console.log("newListing: ", newListing);
@@ -481,6 +489,9 @@ const saveUserActivity = async (req, res) => {
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
               price: Price / 10 ** 18,
+              profit:
+                (Price / 10 ** 16) *
+                parseInt(req.body.transaction.referralRate),
               fromwalletaddress: "0x0000...",
               towalletaddress: "-",
               time: req.body.transactionTime,
