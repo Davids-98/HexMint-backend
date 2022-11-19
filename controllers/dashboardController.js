@@ -5,7 +5,7 @@ const UserModel = require("../models/UserModel");
 
 const getNFTCount = async (req, res) => {
   const { usertype } = req.data;
-  const { activityType } = req.body;
+  const { activityType } = req.params;
   if (usertype === "Super Admin" || usertype === "Admin") {
     const dateScale = 7;
     const countArray = {};
@@ -20,11 +20,18 @@ const getNFTCount = async (req, res) => {
       const activities = await ActivityModel.find({
         activitytype: activityType,
       });
-      // console.log("activities: ", activities);
+      console.log(
+        "activities################################################: ",
+        activities
+      );
       for (var i = 0; i < activities.length; i++) {
         const activity = await ActivityDetailsModel.findOne({
           activityId: activities[i]._id,
         });
+        console.log(
+          "activity####################################################: ",
+          activity
+        );
         const date = new Date(activity.createdAt);
         const key = date.getMonth() + "/" + date.getDate();
         if (countArray[key] !== undefined) {
@@ -36,7 +43,7 @@ const getNFTCount = async (req, res) => {
         date: Object.keys(countArray).reverse(),
         data: Object.values(countArray).reverse(),
       };
-      // console.log("Result: ",result);
+      console.log("Result:..................................... ", result);
       return res.status(200).json({
         status: "success",
         data: result,
@@ -56,13 +63,13 @@ const getNFTCount = async (req, res) => {
 
 const getBalance = async (req, res) => {
   const { usertype } = req.data;
-  const { balanceType } = req.body;
+  const { balanceType } = req.params;
   if (usertype === "Super Admin" || usertype === "Admin") {
     const dateScale = 7;
     const countArray = {};
     const date = new Date();
     for (var i = 0; i < dateScale; i++) {
-      const key = date.getMonth() + " / " + date.getDate();
+      const key = date.getMonth() + "/" + date.getDate();
       countArray[key] = 0;
       date.setTime(date.getTime() - 24 * 3600 * 1000);
     }
@@ -77,11 +84,11 @@ const getBalance = async (req, res) => {
           activityId: activities[i]._id,
         });
         const date = new Date(activity.createdAt);
-        const key = date.getMonth() + " / " + date.getDate();
+        const key = date.getMonth() + "/" + date.getDate();
         if (balanceType === "bought") {
-          countArray[key] = countArray[key] + parseint(activity.price);
+          countArray[key] = countArray[key] + activity.price;
         } else {
-          countArray[key] = countArray[key] + parseint(activity.profit);
+          countArray[key] = countArray[key] + activity.profit;
         }
       }
       const result = {
@@ -106,8 +113,8 @@ const getBalance = async (req, res) => {
 };
 
 const geTopUsers = async (req, res) => {
-  const { userType } = req.body;
-
+  const { userType } = req.params;
+  console.log("geTopUsers", userType);
   try {
     const users = {};
     let activities;
@@ -146,7 +153,9 @@ const geTopUsers = async (req, res) => {
 
     for (var key in users) tuples.push([key, users[key]]);
 
-    tuples.sort(function (a, b) {return b[1] - a[1];});
+    tuples.sort(function (a, b) {
+      return b[1] - a[1];
+    });
 
     for (var i = 0; i < tuples.length; i++) {
       var key = tuples[i][0];
@@ -154,48 +163,58 @@ const geTopUsers = async (req, res) => {
       sorted_users[key] = value;
     }
     // console.log("sorted_users: ", sorted_users);
-    
-    
+
     const result = [];
     const sorted_users_keys = Object.keys(sorted_users);
     let usersLimit;
-    if (sorted_users_keys.length>=8){
+    if (sorted_users_keys.length >= 8) {
       usersLimit = 8;
-    }
-    else{
+    } else {
       usersLimit = sorted_users_keys.length;
     }
-    console.log("sorted user keys: ",sorted_users_keys)
+    console.log("sorted user keys: ", sorted_users_keys);
     for (var i = 0; i < usersLimit; i++) {
-
-      console.log("sorted_users[i]: ",sorted_users_keys[i]);
-      const user = await UserModel.findOne({ walletaddress: sorted_users_keys[i] })
+      console.log("sorted_users[i]: ", sorted_users_keys[i]);
+      const user = await UserModel.findOne({
+        walletaddress: sorted_users_keys[i],
+      });
       // console.log("user: ... .. . . . ", user);
-      let element;
-      if (userType === "seller") {
-        element = {
-          id: i,
-          sellerName: user.name,
-          sellerWalletAddress: sorted_users_keys[i],
-          sellerImage: user.propic,
-        };
-      } else if (userType === "buyer") {
-        element = {
-          id: i,
-          buyerName: user.name,
-          buyerWalletAddress: sorted_users_keys[i],
-          buyerImage: user.propic,
-        };
-      } else {
-        element = {
-          id: i,
-          creatorName: user.name,
-          creatorWalletAddress: sorted_users_keys[i],
-          creatorImage: user.propic,
-        };
+      if (user) {
+        let element;
+        if (userType === "seller") {
+          element = {
+            id: i,
+            sellerName: user.name,
+            sellerWalletAddress:
+              sorted_users_keys[i].slice(0, 9) +
+              "..." +
+              sorted_users_keys[i].slice(38, 42),
+            sellerImage: user.propic,
+          };
+        } else if (userType === "buyer") {
+          element = {
+            id: i,
+            buyerName: user.name,
+            buyerWalletAddress:
+              sorted_users_keys[i].slice(0, 9) +
+              "..." +
+              sorted_users_keys[i].slice(38, 42),
+            buyerImage: user.propic,
+          };
+        } else {
+          element = {
+            id: i,
+            creatorName: user.name,
+            creatorWalletAddress:
+              sorted_users_keys[i].slice(0, 9) +
+              "..." +
+              sorted_users_keys[i].slice(38, 42),
+            creatorImage: user.propic,
+          };
+        }
+        console.log("element: ", element);
+        result.push(element);
       }
-      console.log("element: ", element);
-      result.push(element);
     }
     console.log("resilt: ", result);
     return res.status(200).json({
