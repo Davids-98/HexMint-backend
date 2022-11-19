@@ -164,7 +164,6 @@ const geTopUsers = async (req, res) => {
     }
 
     for (var i = 0; i < usersLimit; i++) {
-
       const user = await UserModel.findOne({
         walletaddress: sorted_users_keys[i],
       });
@@ -229,14 +228,14 @@ const getTotalBalance = async (req, res) => {
         const activity = await ActivityDetailsModel.findOne({
           activityId: activities[i]._id,
         });
-        if (balance === undefined){
+        if (balance === undefined) {
           balance = 0;
         }
         balance += activity.price;
       }
       return res.status(200).json({
         status: "success",
-        data: balance,
+        data: balance.toFixed(5),
       });
     } catch (error) {
       return res.status(500).json({
