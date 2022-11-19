@@ -1,19 +1,25 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/dashboardController");
+const dashboardController = require("../controllers/dashboardController");
 const authController = require("../controllers/authController");
 
 router.get(
   "/get-nft-count/:activityType",
   authController.authenticate,
-  userController.getNFTCount
+  dashboardController.getNFTCount
 );
 
 router.get(
   "/get-balance/:balanceType",
   authController.authenticate,
-  userController.getBalance
+  dashboardController.getBalance
 );
 
-router.get("/get-top-users/:userType", userController.geTopUsers);
+router.get(
+  "/get-total-balance",
+  authController.authenticate,
+  dashboardController.getTotalBalance
+);
+
+router.get("/get-top-users/:userType", dashboardController.geTopUsers);
 module.exports = router;

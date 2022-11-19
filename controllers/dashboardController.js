@@ -15,23 +15,17 @@ const getNFTCount = async (req, res) => {
       countArray[key] = 0;
       date_.setTime(date_.getTime() - 24 * 3600 * 1000);
     }
-    // console.log("countArray: ", countArray, activityType);
+
     try {
       const activities = await ActivityModel.find({
         activitytype: activityType,
       });
-      console.log(
-        "activities################################################: ",
-        activities
-      );
+
       for (var i = 0; i < activities.length; i++) {
         const activity = await ActivityDetailsModel.findOne({
           activityId: activities[i]._id,
         });
-        console.log(
-          "activity####################################################: ",
-          activity
-        );
+
         const date = new Date(activity.createdAt);
         const key = date.getMonth() + "/" + date.getDate();
         if (countArray[key] !== undefined) {
@@ -43,7 +37,7 @@ const getNFTCount = async (req, res) => {
         date: Object.keys(countArray).reverse(),
         data: Object.values(countArray).reverse(),
       };
-      console.log("Result:..................................... ", result);
+
       return res.status(200).json({
         status: "success",
         data: result,
@@ -114,7 +108,6 @@ const getBalance = async (req, res) => {
 
 const geTopUsers = async (req, res) => {
   const { userType } = req.params;
-  console.log("geTopUsers", userType);
   try {
     const users = {};
     let activities;
@@ -127,7 +120,6 @@ const geTopUsers = async (req, res) => {
         activitytype: "bought",
       });
     }
-    // console.log;
     for (var i = 0; i < activities.length; i++) {
       const activity = await ActivityDetailsModel.findOne({
         activityId: activities[i]._id,
@@ -147,7 +139,6 @@ const geTopUsers = async (req, res) => {
         }
       }
     }
-    // console.log("users: ", users);
     var tuples = [];
     const sorted_users = {};
 
@@ -162,7 +153,6 @@ const geTopUsers = async (req, res) => {
       var value = tuples[i][1];
       sorted_users[key] = value;
     }
-    // console.log("sorted_users: ", sorted_users);
 
     const result = [];
     const sorted_users_keys = Object.keys(sorted_users);
@@ -172,13 +162,12 @@ const geTopUsers = async (req, res) => {
     } else {
       usersLimit = sorted_users_keys.length;
     }
-    console.log("sorted user keys: ", sorted_users_keys);
+
     for (var i = 0; i < usersLimit; i++) {
-      console.log("sorted_users[i]: ", sorted_users_keys[i]);
+
       const user = await UserModel.findOne({
         walletaddress: sorted_users_keys[i],
       });
-      // console.log("user: ... .. . . . ", user);
       if (user) {
         let element;
         if (userType === "seller") {
@@ -212,11 +201,9 @@ const geTopUsers = async (req, res) => {
             creatorImage: user.propic,
           };
         }
-        console.log("element: ", element);
         result.push(element);
       }
     }
-    console.log("resilt: ", result);
     return res.status(200).json({
       status: "success",
       data: result,
@@ -228,8 +215,45 @@ const geTopUsers = async (req, res) => {
   }
 };
 
+const getTotalBalance = async (req, res) => {
+  const { usertype } = req.data;
+  if (usertype === "Super Admin" || usertype === "Admin") {
+    let balance;
+
+    try {
+      const activities = await ActivityModel.find({
+        activitytype: "bought",
+      });
+
+      for (var i = 0; i < activities.length; i++) {
+        const activity = await ActivityDetailsModel.findOne({
+          activityId: activities[i]._id,
+        });
+        if (balance === undefined){
+          balance = 0;
+        }
+        balance += activity.price;
+      }
+      return res.status(200).json({
+        status: "success",
+        data: balance,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Error Occured!",
+      });
+    }
+  } else {
+    return res.status(401).json({
+      message: "Unauthorized!",
+      status: 401,
+    });
+  }
+};
+
 module.exports = {
   getNFTCount,
   getBalance,
   geTopUsers,
+  getTotalBalance,
 };
