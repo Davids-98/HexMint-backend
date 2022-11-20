@@ -210,28 +210,29 @@ const getAdminRequests = async (req, res) => {
 
       for (var i = 0; i < requests.length; i++) {
         const user = await UserModel.findOne({ _id: requests[i].userid });
-        const admin = await AdminDetailsModel.findOne({
-          userid: requests[i].userid,
-        });
-        const obj = {
-          userid: requests[i].userid,
-          walletaddress: user.walletaddress,
-          name: user.name,
-          DOB: admin.DOB,
-          exist: {
-            email: admin.email,
-            mobilenumber: admin.mobilenumber,
-            propic: admin.propic,
-          },
-          new: {
-            email: requests[i].email,
-            mobilenumber: requests[i].mobilenumber,
-            propic: requests[i].propic,
-          },
-        };
-        out.push(obj);
+        if (user) {
+          const admin = await AdminDetailsModel.findOne({
+            userid: requests[i].userid,
+          });
+          const obj = {
+            userid: requests[i].userid,
+            walletaddress: user.walletaddress,
+            name: user.name,
+            DOB: admin.DOB,
+            exist: {
+              email: admin.email,
+              mobilenumber: admin.mobilenumber,
+              propic: admin.propic,
+            },
+            new: {
+              email: requests[i].email,
+              mobilenumber: requests[i].mobilenumber,
+              propic: requests[i].propic,
+            },
+          };
+          out.push(obj);
+        }
       }
-
       return res.status(200).json({
         status: "ok",
         message: "Successfully Fetched!",
