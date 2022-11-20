@@ -1,6 +1,5 @@
 const ActivityModel = require("../models/ActivityModel");
 const ActivityDetailsModel = require("../models/ActivityDetailsModel");
-const UserController = require("./userController");
 const UserModel = require("../models/UserModel");
 
 const getNFTCount = async (req, res) => {

@@ -1,12 +1,10 @@
 const UserModel = require("../models/UserModel");
 const AdminDetailsModel = require("../models/AdminDetailsModel");
 const AdminUpdatingDetailsModel = require("../models/AdminUpdatingDetailsModel");
-const UserStatusModel = require("../models/UserStatusModel");
 
 const handleAddAdmin = async (req, res) => {
   const { usertype } = req.data;
   const { name, walletaddress, email, mobilenumber, DOB } = req.body;
-  // console.log("passing data", name, walletaddress, email, mobilenumber, DOB);
   if (usertype === "Super Admin") {
     try {
       const user = await UserModel.findOne({
@@ -59,7 +57,6 @@ const handleAddAdmin = async (req, res) => {
 const handleUpdateAdmin = async (req, res) => {
   const { walletaddress, email, mobilenumber, propic } = req.body;
   const { usertype } = req.data;
-  console.log("in handle update admin and usertype", usertype);
   if (usertype !== "Admin") {
     return res.status(401).json({
       message: "Unauthorized!",
@@ -68,8 +65,6 @@ const handleUpdateAdmin = async (req, res) => {
     try {
       //Update userModel and adminDetailsModel
       const user = await UserModel.findOne({ walletaddress: walletaddress });
-      console.log("user", user);
-      console.log("user id", user._id);
       const request = await AdminUpdatingDetailsModel.findOne({
         userid: user._id,
       });
@@ -136,7 +131,6 @@ const getAllAdmins = async (req, res) => {
         out.push(admin);
       }
 
-      // console.log(out);
       return res.status(200).json({
         status: "success",
         data: out,
@@ -160,12 +154,11 @@ const getAdminDetails = async (req, res) => {
   if (usertype === "Admin") {
     try {
       const user = await UserModel.findOne({ walletaddress: walletaddress });
-      // console.log("user", user);
 
       const admin = await AdminDetailsModel.findOne({
         userid: user._id,
       }).populate("userid");
-      // console.log("admin", admin);
+
       return res.status(200).json({
         message: "Successfully Fetched!",
         data: admin,
@@ -188,7 +181,6 @@ const deleteAdmin = async (req, res) => {
   if (usertype === "Super Admin") {
     try {
       const { id } = req.params;
-      // console.log(id);
 
       const admin = await AdminDetailsModel.deleteOne({ userid: id });
       const user = await UserModel.deleteOne({ _id: id });

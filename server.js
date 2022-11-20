@@ -32,16 +32,6 @@ const multer = require("multer");
 //import mongoose
 const mongoose = require("mongoose");
 
-//express app
-// const app = express()
-// app.use(express.json())
-
-// app.use(bodyParser.json());
-
-// //middleware
-// app.use(express.json());
-// app.use(cors());
-
 const app = require("./app");
 
 //express app
@@ -49,21 +39,6 @@ const db = require("./db_connections");
 //Connecting to database
 const PORT = process.env.PORT || 1377;
 
-// app.use((req, res, next) => {
-//     console.log(req.path, req.method)
-//     next()
-// })
-
-//listen for request
-
-//Route(Respond to the Request)
-
-// app.use("/auth", require("./routes/auth"));
-// app.use("/user", require("./routes/user"));
-// app.use("/customer", multer().array(), require("./routes/customer"));
-// app.use("/admin", multer().array(), require("./routes/admin"));
-
-// listner
 db.connect()
   .then(() => {
     app.listen(PORT, () => {
