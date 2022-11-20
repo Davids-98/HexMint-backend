@@ -2,10 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var Activity = new Schema({
-  activityid: {
-    type: Schema.Types.ObjectId,
-    required: true
-  },
+  // activityid: {
+  //   type: Schema.Types.ObjectId,
+  //   required: true
+  // },
   userid: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -14,19 +14,19 @@ var Activity = new Schema({
   activitytype: {
     type: String,
     required: true,
-    enum: ["minted", "listed", "buyed", "transfered"]
+    enum: ["minted", "listed", "bought", "transferred", "bade"]
   },
   NFTid: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'NFT'
+    type: String,
+    
+    required: true
   },
 
-  activitydetailsid: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'ActivityDetails'
-  },
+  // activitydetailsid: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   required: true,
+  //   ref: 'ActivityDetails'
+  // },
 
 },{timestamps : true});
 

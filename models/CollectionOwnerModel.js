@@ -1,21 +1,16 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var Report = new Schema({
-  fromuserid: {
+var CollectionOwners = new Schema({
+  collectionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Collection'
+  },
+  userid: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'User'
   },
-  touserid: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'User'
-  },
-  reason: {
-    type: String,
-    required: true
-  },
-
 },{timestamps : true});
 
-module.exports = mongoose.model('Report', Report)
+module.exports = mongoose.model('CollectionOwners', CollectionOwners)

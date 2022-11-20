@@ -2,11 +2,16 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ActivityDetail = new Schema({
-  activitydetailsid: {
-    type: Schema.Types.ObjectId,
-    required: true
+  activityId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'ActivityModel'
   },
   price: {
+    type: Number,
+    required: true
+  },
+  profit: {
     type: Number,
     required: true
   },
@@ -23,7 +28,7 @@ var ActivityDetail = new Schema({
     required: true
   },
   transactionhash: {
-    type: Date,
+    type: String,
     required: true
   }
 },{timestamps : true});

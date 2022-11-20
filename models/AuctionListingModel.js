@@ -1,25 +1,35 @@
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-var auctionlisting = new Schema({
-  listingid: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'Listings'
+var auctionlisting = new Schema(
+  {
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
+    bidderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
+    tokenId: {
+      type: String,
+      required: true,
+    },
+    currentbid: {
+      type: String,
+      required: true,
+    },
+    referralRate: {
+      type: Number,
+      required: true,
+    },
+    endDate: {
+      type: String,
+      required: true,
+    },
   },
-  currentbid: {
-    type: Number,
-    required: true
-  },
-  duration: {
-    type: Date,
-    required: true
-  },
-  highestbidderid: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'User'
-  },
+  { timestamps: true }
+);
 
-},{timestamps : true});
-
-module.exports = mongoose.model('auctionlisting', auctionlisting)
+module.exports = mongoose.model("auctionlisting", auctionlisting);

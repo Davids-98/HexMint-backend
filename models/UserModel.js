@@ -19,8 +19,17 @@ var User = new Schema({
     type: String
   },
   propic: {
-    type: Buffer
-  }
+    type : String
+    // type: {
+    //   data: Buffer,
+    //   contentType: String
+    // }
+  },
+  isblocked: {
+    type: Boolean,
+    default: false,
+    required: true
+  },
 },{timestamps : true});
 
 module.exports = mongoose.model('User', User)
