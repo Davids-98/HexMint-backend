@@ -8,7 +8,6 @@ function connect() {
       dbURI = process.env.DB_TEST_URI;
     } else {
       dbURI = process.env.MONG_URI;
-      // dbURI = process.env.DB_TEST_URI;
     }
 
     mongoose

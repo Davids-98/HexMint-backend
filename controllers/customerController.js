@@ -1,5 +1,3 @@
-const AdminDetailsModel = require("../models/AdminDetailsModel");
-
 const ActivityDetailsModel = require("../models/ActivityDetailsModel");
 const ActivityModel = require("../models/ActivityModel");
 const AuctionListingModel = require("../models/AuctionListingModel");
@@ -30,8 +28,7 @@ const updateUserDetails = async (req, res) => {
         },
         { new: true }
       );
-      console.log("user");
-      console.log(user);
+
       if (user) {
         return res.status(200).json({
           message: "success",
@@ -68,7 +65,7 @@ const createCollection = async (req, res) => {
   } else {
     try {
       const user = await UserModel.findOne({ walletaddress: userid });
-      // console.log("user",user," ",user._id);
+
       if (user) {
         try {
           const collection = await CollectionModel.findOne({
@@ -126,7 +123,7 @@ const createCollectionOwner = async (req, res) => {
     try {
       const user = await UserModel.findOne({ walletaddress: userid });
       const collection = await CollectionModel.findOne({ _id: collectionId });
-      // console.log("user",user," ",user._id);
+
       if (user && collection) {
         try {
           const collectionOwner = await CollectionOwnerModel.findOne({
@@ -184,8 +181,6 @@ const createCollectionOwner = async (req, res) => {
 const getAllUsers = async (req, res) => {
   const { usertype } = req.data;
 
-  console.log("In get all users...............", usertype);
-  console.log(usertype === "Super Admin" || usertype === "Admin");
   if (usertype === "Admin" || usertype === "Super Admin") {
     try {
       const users = await UserModel.find({
@@ -193,7 +188,6 @@ const getAllUsers = async (req, res) => {
         isblocked: false,
       });
 
-      // console.log(users);
       return res.status(200).json({
         status: "success",
         data: users,
@@ -202,7 +196,6 @@ const getAllUsers = async (req, res) => {
       return res.status(400).json({
         status: "error",
       });
-      // console.log("error");
     }
   } else {
     return res.status(401).json({
@@ -234,7 +227,6 @@ const getAllBlockedUsers = async (req, res) => {
       return res.status(400).json({
         status: "error",
       });
-      // console.log("error");
     }
   }
 };
@@ -243,7 +235,6 @@ const getAllCollections = async (req, res) => {
   try {
     const collections = await CollectionModel.find();
 
-    // console.log(collections);
     return res.status(200).json({
       status: "success",
       collections: collections,
@@ -258,12 +249,12 @@ const getAllCollections = async (req, res) => {
 
 const getCollectionName = async (req, res) => {
   const { collectionID } = req.body;
-  console.log("collectionID", collectionID);
+
   try {
     const collection = await CollectionModel.findOne({
       _id: collectionID,
     });
-    console.log("collection", collection);
+
     if (collection) {
       collectionName = collection.collectionName;
       return res.status(200).json({
@@ -283,10 +274,8 @@ const getCollectionName = async (req, res) => {
 };
 
 const getUserActivityDetails = async (req, res) => {
-  console.log("In get User Activity Details");
-
   const { walletAddress } = req.params;
-  console.log("walletAddress", walletAddress);
+
   const { usertype } = req.data;
 
   if (usertype !== "Customer") {
@@ -298,7 +287,7 @@ const getUserActivityDetails = async (req, res) => {
     const resultArray = [];
     try {
       const user = await UserModel.findOne({ walletaddress: walletAddress });
-      console.log("user", user);
+
       if (user) {
         const userActivity = await ActivityModel.find({ userid: user._id });
 
@@ -307,10 +296,9 @@ const getUserActivityDetails = async (req, res) => {
             const activityDetails = await ActivityDetailsModel.findOne({
               activityId: userActivity[i]._id,
             }).populate("activityId");
-            // console.log("activityDetails", activityDetails);
+
             dataArray.push(activityDetails);
           }
-          console.log("resultArray", resultArray);
 
           for (var i = 0; i < dataArray.length; i++) {
             item = dataArray[i];
@@ -340,7 +328,6 @@ const getUserActivityDetails = async (req, res) => {
         });
       }
     } catch (err) {
-      console.log(err);
       return res.status(400).json({
         message: err,
       });
@@ -349,9 +336,6 @@ const getUserActivityDetails = async (req, res) => {
 };
 
 const saveUserActivity = async (req, res) => {
-  console.log("in save user activity");
-  console.log(req.body);
-
   //Access authentincate data
   const { usertype } = req.data;
 
@@ -360,27 +344,23 @@ const saveUserActivity = async (req, res) => {
       const user = await UserModel.findOne({
         walletaddress: req.body.transaction.from,
       });
-      console.log("user", user);
+
       if (user) {
         const userId = user._id;
-        console.log("Inside user userId", userId);
+
         //Create a new activity
-        console.log("Activity type is", req.body.activityType);
-        console.log("NFT id is", parseInt(req.body.tokenID.tokenId.hex, 16));
+
         const newActivity = await ActivityModel.create({
           userid: userId,
           activitytype: req.body.activityType,
           NFTid: parseInt(req.body.tokenID.tokenId.hex, 16).toString(),
         });
 
-        console.log("new activity", newActivity);
         if (newActivity) {
-          console.log("new activity created transfer");
           //Create a new activity details for the new activity
           const Price = parseInt(req.body.transaction.value.hex, 16);
 
           if (req.body.activityType === "minted") {
-            console.log("Inside minted");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
               price: Price / 10 ** 18,
@@ -401,7 +381,6 @@ const saveUserActivity = async (req, res) => {
               });
             }
           } else if (req.body.activityType === "transferred") {
-            console.log("Inside transferred");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
               price: Price / 10 ** 18,
@@ -413,7 +392,6 @@ const saveUserActivity = async (req, res) => {
             });
 
             if (newActivityDetails) {
-              console.log("new activity details created transfer");
               return res.status(200).json({
                 message: "success",
               });
@@ -423,14 +401,13 @@ const saveUserActivity = async (req, res) => {
               });
             }
           } else if (req.body.activityType === "bought") {
-            console.log("Inside bought");
-            console.log("req.body: ", req.body);
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
               price: Price / 10 ** 18,
               profit:
-                (Price / 10 ** 16) *
-                parseInt(req.body.transaction.referralRate),
+                ((Price / 10 ** 18) *
+                  parseInt(req.body.transaction.referralRate)) /
+                (100 + parseInt(req.body.transaction.referralRate)),
               fromwalletaddress: req.body.tokenID.seller,
               towalletaddress: req.body.transaction.from,
               time: req.body.transactionTime,
@@ -447,7 +424,6 @@ const saveUserActivity = async (req, res) => {
               });
             }
           } else if (req.body.activityType === "listed") {
-            // console.log("Inside listed");
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
               price: Price / 10 ** 18,
@@ -458,13 +434,7 @@ const saveUserActivity = async (req, res) => {
               transactionhash: req.body.transaction.hash,
             });
 
-            // console.log("req.body.transaction.listingType: ",req.body.transaction.listingType);
-            // console.log(req.body.transaction.listingType === "2");
-            // console.log("req.body.transaction: ",req.body.transaction);
-
             if (req.body.transaction.listingType === "2") {
-              // console.log("Inside if listing type 2 and....", req.body);
-              console.log("inside if");
               const newListing = await AuctionListingModel.create({
                 ownerId: userId,
                 bidderId: userId,
@@ -473,7 +443,6 @@ const saveUserActivity = async (req, res) => {
                 referralRate: req.body.transaction.referralRate,
                 endDate: req.body.transaction.endDate,
               });
-              console.log("newListing: ", newListing);
             }
             if (newActivityDetails) {
               return res.status(200).json({
@@ -485,13 +454,13 @@ const saveUserActivity = async (req, res) => {
               });
             }
           } else if (req.body.activityType === "bade") {
-            console.log("Inside bade..........", req.body);
             const newActivityDetails = await ActivityDetailsModel.create({
               activityId: newActivity._id,
               price: Price / 10 ** 18,
               profit:
-                (Price / 10 ** 16) *
-                parseInt(req.body.transaction.referralRate),
+                ((Price / 10 ** 18) *
+                  parseInt(req.body.transaction.referralRate)) /
+                (100 + parseInt(req.body.transaction.referralRate)),
               fromwalletaddress: "0x0000...",
               towalletaddress: "-",
               time: req.body.transactionTime,
@@ -504,8 +473,8 @@ const saveUserActivity = async (req, res) => {
               tokenId: parseInt(req.body.tokenID.tokenId.hex, 16).toString(),
               currentbid: req.body.transaction.currentbid,
               endDate: req.body.transaction.endDate,
+              referralRate: req.body.transaction.referralRate,
             });
-            console.log("newListing: ", newBidding);
 
             if (newActivityDetails) {
               return res.status(200).json({
@@ -517,7 +486,6 @@ const saveUserActivity = async (req, res) => {
               });
             }
           } else {
-            console.log("activity type not found");
             return res.status(400).json({
               message: "Activity type not found",
             });
@@ -546,7 +514,6 @@ const saveUserActivity = async (req, res) => {
 };
 
 const handleBlockUser = async (req, res) => {
-  console.log("in handle block user");
   const { usertype } = req.data;
   if (usertype !== "Admin") {
     return res.status(401).json({
@@ -561,7 +528,6 @@ const handleBlockUser = async (req, res) => {
         { isblocked: true },
         { new: true }
       );
-      console.log(blockuser);
 
       return res.status(200).json({
         data: blockuser,
@@ -605,8 +571,6 @@ const handleUnblockUser = async (req, res) => {
 };
 
 const getReports = async (req, res) => {
-  console.log("in get reports");
-
   const { usertype } = req.data;
 
   if (usertype !== "Admin") {
@@ -617,9 +581,8 @@ const getReports = async (req, res) => {
   } else {
     const out = [];
     try {
-      console.log("in try");
       const reports = await ReportModel.find();
-      console.log(1);
+
       for (let i = 0; i < reports.length; i++) {
         const fromuser = await UserModel.findOne({
           _id: reports[i].fromuserid,
@@ -680,7 +643,6 @@ const getCustomerDetailsFromWalletAddress = async (req, res) => {
     usertype === "Super Admin"
   ) {
     try {
-      console.log("walletaddress from params", walletaddress);
       const user = await UserModel.findOne({ walletaddress: walletaddress });
       if (user) {
         if (user.usertype === "Customer") {
@@ -720,9 +682,8 @@ const getCustomerDetailsFromWalletAddress = async (req, res) => {
 
 const handleReportSeller = async (req, res) => {
   const { usertype } = req.data;
-  console.log("in report seller", usertype);
+
   if (usertype !== "Customer") {
-    console.log("not customer.........", usertype);
     return res.status(401).json({
       message: "You are not authorized to perform this action",
       status: 401,
@@ -730,32 +691,28 @@ const handleReportSeller = async (req, res) => {
   } else {
     try {
       const { sellerWalletAddress, reason, ViewerAddress } = req.body;
-      console.log("in try", sellerWalletAddress, reason, ViewerAddress);
+
       const seller = await UserModel.findOne({
         walletaddress: sellerWalletAddress,
       });
       const sellerUID = seller._id;
-      console.log("sellerUID is......", sellerUID);
 
       const viewer = await UserModel.findOne({
         walletaddress: ViewerAddress,
       });
       const viewerUID = viewer._id;
-      console.log("viewerUID is......", viewerUID);
 
       const reportedBefore = await ReportModel.findOne({
         touserid: sellerUID,
         fromuserid: viewerUID,
       });
-      console.log("reportedBefore is......", reportedBefore);
+
       if (reportedBefore || seller.isblocked) {
         return res.status(400).json({
           message: "You have already reported this seller",
           status: 400,
         });
       } else {
-        console.log("in else,,,,,,,,,,,");
-
         if (sellerUID && viewerUID) {
           const report = await ReportModel.create({
             fromuserid: viewerUID,
@@ -784,10 +741,8 @@ const handleReportSeller = async (req, res) => {
 };
 
 getIsBlocked = async (req, res) => {
-  console.log("in get is blocked", req.params);
-
   const { walletaddress } = req.params;
-  console.log("walletaddress is blocked ...................", walletaddress);
+
   try {
     const blockedUser = await UserModel.findOne({
       walletaddress: walletaddress,

@@ -12,15 +12,6 @@ router.get(
   "/user-details-from-userid",
   userController.getUserDetailsFromUserId
 );
-router.get(
-  "/time-auction-details",
-  userController.getTimeAuctionDetails
-);
-
-// router.get(
-//   "/user-type",
-//   authController.authenticate,
-//   userController.getUserType
-// );
+router.get("/time-auction-details", userController.getTimeAuctionDetails);
 
 module.exports = router;

@@ -1,6 +1,5 @@
 const ActivityModel = require("../models/ActivityModel");
 const ActivityDetailsModel = require("../models/ActivityDetailsModel");
-const UserController = require("./userController");
 const UserModel = require("../models/UserModel");
 
 const getNFTCount = async (req, res) => {
@@ -232,7 +231,7 @@ const getTotalBalance = async (req, res) => {
       }
       return res.status(200).json({
         status: "success",
-        data: balance,
+        data: balance.toFixed(5),
       });
     } catch (error) {
       return res.status(500).json({
