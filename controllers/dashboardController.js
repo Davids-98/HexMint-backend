@@ -216,7 +216,7 @@ const geTopUsers = async (req, res) => {
 const getTotalBalance = async (req, res) => {
   const { usertype } = req.data;
   if (usertype === "Super Admin" || usertype === "Admin") {
-    let balance;
+    let balance = 0;
 
     try {
       const activities = await ActivityModel.find({
@@ -227,9 +227,6 @@ const getTotalBalance = async (req, res) => {
         const activity = await ActivityDetailsModel.findOne({
           activityId: activities[i]._id,
         });
-        if (balance === undefined) {
-          balance = 0;
-        }
         balance += activity.price;
       }
       return res.status(200).json({
