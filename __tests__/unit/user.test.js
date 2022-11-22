@@ -5,7 +5,6 @@ const uuid = require("uuid");
 
 const {
   getUserDetailsFromWalletAddress,
-  getUserType,
 } = require("../../controllers/userController");
 
 describe("Customer Controller", () => {
@@ -24,12 +23,13 @@ describe("Customer Controller", () => {
       console.log(error);
     }
   });
-  describe("Get User Details", () => {
+  describe("Get User Details from walletaddress", () => {
     it("should responce successfully get user details", async () => {
       const req = {
         query: {
           walletAddress: "0x123955089",
         },
+        data: { usertype: "Customer" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -41,39 +41,13 @@ describe("Customer Controller", () => {
     it("should responce error", async () => {
       const req = {
         query: {},
+        data: { usertype: "Customer" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn().mockReturnThis(),
       };
       const result = await getUserDetailsFromWalletAddress(req, res);
-      expect(result.status).toHaveBeenCalledWith(400);
-    });
-  });
-  describe("Get User Type", () => {
-    it("should responce successfully get user type", async () => {
-      const req = {
-        query: {
-          walletAddress: "0x123955089",
-        },
-      };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn().mockReturnThis(),
-      };
-      const result = await getUserType(req, res);
-      expect(result.status).toHaveBeenCalledWith(200);
-    });
-
-    it("should responce error", async () => {
-      const req = {
-        query: {},
-      };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn().mockReturnThis(),
-      };
-      const result = await getUserType(req, res);
       expect(result.status).toHaveBeenCalledWith(400);
     });
   });
