@@ -36,7 +36,10 @@ describe("Admin Controller", () => {
           mobile: "1234567890",
           DOB: "2021-01-01",
         },
+
+        data: { usertype: "Super Admin" },
       };
+
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn().mockReturnThis(),
@@ -53,6 +56,7 @@ describe("Admin Controller", () => {
           mobilenumber: "1234567890",
           DOB: "2021-01-01",
         },
+        data: { usertype: "Super Admin" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -69,6 +73,7 @@ describe("Admin Controller", () => {
           mobilenumber: "1234567890",
           DOB: "2021-01-01",
         },
+        data: { usertype: "Super Admin" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -84,6 +89,7 @@ describe("Admin Controller", () => {
         body: {
           walletaddress: "0x123955089",
         },
+        data: { usertype: "Admin" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -95,6 +101,7 @@ describe("Admin Controller", () => {
     it("should responce error occured", async () => {
       const req = {
         body: {},
+        data: { usertype: "Admin" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -113,13 +120,14 @@ describe("Admin Controller", () => {
           mobilenumber: "1234567890",
           propic: "test-image",
         },
+        data: { usertype: "Admin" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn().mockReturnThis(),
       };
       const result = await handleUpdateAdmin(req, res);
-      expect(result.status).toHaveBeenCalledWith(200);
+      expect(result.status).toHaveBeenCalledWith(202);
     });
     it("should responce no user found", async () => {
       const req = {
@@ -129,18 +137,21 @@ describe("Admin Controller", () => {
           mobilenumber: "1234567890",
           propic: "test-image",
         },
+        data: { usertype: "Admin" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn().mockReturnThis(),
       };
       const result = await handleUpdateAdmin(req, res);
-      expect(result.status).toHaveBeenCalledWith(400);
+      expect(result.status).toHaveBeenCalledWith(500);
     });
   });
   describe("Get All Admins", () => {
     it("should responce all admins", async () => {
-      const req = {};
+      const req = {
+        data: { usertype: "Super Admin" },
+      };
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn().mockReturnThis(),

@@ -35,6 +35,7 @@ describe("Customer Controller", () => {
           username: "test",
           propic: "test",
         },
+        data: { usertype: "Customer" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -50,6 +51,7 @@ describe("Customer Controller", () => {
           username: "test",
           propic: "test",
         },
+        data: { usertype: "Customer" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -61,7 +63,9 @@ describe("Customer Controller", () => {
   });
   describe("Get All Users", () => {
     it("should responce successfully get all users", async () => {
-      const req = {};
+      const req = {
+        data: { usertype: "Admin" },
+      };
       const res = {
         status: jest.fn().mockReturnThis(),
         json: jest.fn().mockReturnThis(),
@@ -80,6 +84,7 @@ describe("Customer Controller", () => {
           logoImg: "test",
           ownersCount: 1,
         },
+        data: { usertype: "Customer" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -97,6 +102,7 @@ describe("Customer Controller", () => {
           logoImg: "test",
           ownersCount: 1,
         },
+        data: { usertype: "Customer" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -114,6 +120,7 @@ describe("Customer Controller", () => {
           logoImg: "test",
           ownersCount: "test",
         },
+        data: { usertype: "Customer" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
@@ -131,6 +138,7 @@ describe("Customer Controller", () => {
           logoImg: "test",
           ownersCount: 1,
         },
+        data: { usertype: "Customer" },
       };
       const res = {
         status: jest.fn().mockReturnThis(),
