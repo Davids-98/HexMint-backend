@@ -22,19 +22,6 @@ describe("Auth Controller", () => {
     }
   });
   describe("Connect Wallet", () => {
-    it("should responce already exists user", async () => {
-      const req = {
-        body: {
-          walletaddress: { address: "0xDAE89F16a9DbfAF14D9C4C343a1c645" },
-        },
-      };
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn().mockReturnThis(),
-      };
-      const result = await handleConnectWallet(req, res);
-      expect(result.status).toHaveBeenCalledWith(200);
-    });
     it("should responce successfully added user", async () => {
       const req = {
         body: {
@@ -46,7 +33,7 @@ describe("Auth Controller", () => {
         json: jest.fn().mockReturnThis(),
       };
       const result = await handleConnectWallet(req, res);
-      expect(result.status).toHaveBeenCalledWith(201);
+      expect(result.status).toHaveBeenCalledWith(200);
     });
     it("should responce error", async () => {
       const req = {
